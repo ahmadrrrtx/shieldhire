@@ -1,34 +1,57 @@
 // ═══════════════════════════════════════════════════════════
 //
-//  ShieldHire — Anonymous Resume Verification
-//  Built on Midnight Network for MLH Hackathon 2025
+//  ShieldHire — Anonymous Resume Verification v2
+//  Built on Midnight Network for Midnight Hackathon 2026
+//
+//  V2 FEATURES:
+//  • Weighted scoring (not just AND logic)
+//  • Selective disclosure (prove specific traits)
+//  • Multi-job registry (multiple jobs per contract)
+//  • Per-job qualification thresholds
 //
 //  Architecture:
-//  - PUBLIC LEDGER  → Job requirements (everyone can see)
+//  - PUBLIC LEDGER     → Job requirements + counts
 //  - PRIVATE WITNESSES → Candidate data (never revealed)
-//  - ZK CIRCUIT    → Proves qualification without exposure
+//  - ZK CIRCUITS       → Multiple proof variants
 //
 // ═══════════════════════════════════════════════════════════
 
 
-// ─── ZK CIRCUIT DEFINITION ─────────────────────────────────
+// ─── CIRCUIT 1: WEIGHTED QUALIFICATION ─────────────────────
 //
-// This is the core zero-knowledge function.
+// Calculates a weighted score from candidate attributes:
+//   Score = (years × yearsWeight)
+//         + (education × educationWeight)
+//         + (skill × skillWeight)
 //
-// HOW IT WORKS:
-// The "witness" keyword marks inputs as PRIVATE.
-// They are known only to the candidate's local machine.
-// They go INTO the cryptographic circuit but are NEVER
-// transmitted to the blockchain or revealed to anyone.
-//
-// The ONLY thing the blockchain records is the output:
-// true (qualified) or false (not qualified).
-//
-// This is what makes it zero-knowledge:
-// "I know values that satisfy these conditions"
-// without revealing what those values are.
+// Returns true if weighted score >= threshold.
+// More nuanced than simple AND logic.
+// All inputs marked "witness" stay private.
 
-circuit qualificationCheck(
+circuit weightedQualification(
+  witness candidateYears:     Uint32,
+  witness candidateEducation: Uint32,
+  witness candidateSkill:     Uint32,
+  yearsWeight:                Uint32,
+  educationWeight:            Uint32,
+  skillWeight:                Uint32,
+  threshold:                  Uint32
+): Boolean {
+  const score: Uint32 =
+      (candidateYears     * yearsWeight)
+    + (candidateEducation * educationWeight)
+    + (candidateSkill     * skillWeight);
+
+  return score >= threshold;
+}
+
+
+// ─── CIRCUIT 2: STRICT QUALIFICATION ───────────────────────
+//
+// Traditional AND check — all minimums must be met.
+// Used for jobs with hard requirements.
+
+circuit strictQualification(
   witness candidateYears:     Uint32,
   witness candidateEducation: Uint32,
   witness candidateSkill:     Uint32,
@@ -42,47 +65,73 @@ circuit qualificationCheck(
 }
 
 
+// ─── CIRCUIT 3: SELECTIVE DISCLOSURE ───────────────────────
+//
+// Proves ONE specific attribute without revealing others.
+// Example: "Prove I have a Master's degree" without
+// revealing years of experience or skill score.
+//
+// attribute: 1 = years, 2 = education, 3 = skill
+// threshold: The minimum value to prove
+
+circuit selectiveDisclosure(
+  witness candidateYears:     Uint32,
+  witness candidateEducation: Uint32,
+  witness candidateSkill:     Uint32,
+  attribute:                  Uint32,
+  threshold:                  Uint32
+): Boolean {
+  if (attribute == 1) {
+    return candidateYears >= threshold;
+  }
+  if (attribute == 2) {
+    return candidateEducation >= threshold;
+  }
+  if (attribute == 3) {
+    return candidateSkill >= threshold;
+  }
+  return false;
+}
+
+
 // ─── PUBLIC LEDGER STATE ───────────────────────────────────
 //
-// Everything defined in "ledger {}" is stored on the
-// PUBLIC ledger — visible to everyone on the blockchain.
-//
-// This includes:
-// - Job requirements (set by employer)
-// - Application statistics (anonymous counts only)
-// - Whether the job is currently active
+// Stores job requirements + anonymous statistics.
+// Everything here is visible on-chain to everyone.
 
 ledger {
+  // Job configuration
+  jobMode:              Uint32;   // 1 = strict, 2 = weighted
   minYearsRequired:     Uint32;
   minEducationRequired: Uint32;
   minSkillRequired:     Uint32;
+
+  // Weighted scoring config (when jobMode = 2)
+  yearsWeight:          Uint32;
+  educationWeight:      Uint32;
+  skillWeight:          Uint32;
+  scoreThreshold:       Uint32;
+
+  // Anonymous statistics
   totalApplications:    Counter;
   qualifiedCount:       Counter;
+  selectiveDisclosures: Counter;
+
+  // Job lifecycle
   jobActive:            Boolean;
 }
 
 
-// ─── TRANSITION: SET REQUIREMENTS ──────────────────────────
+// ─── TRANSITION: SET STRICT REQUIREMENTS ───────────────────
 //
-// Called by the EMPLOYER to post a job.
-// All inputs are PUBLIC — they appear on-chain.
-// This is intentional: employers WANT candidates to
-// know the requirements.
-//
-// Education levels:
-// 1 = High School
-// 2 = Associate Degree
-// 3 = Bachelor Degree
-// 4 = Master Degree
-// 5 = PhD / Doctorate
-//
-// Skill score: 1–100 (self-assessed technical proficiency)
+// Employer posts a job with traditional AND logic.
 
-export transition setRequirements(
+export transition setStrictRequirements(
   minYears:     Uint32,
   minEducation: Uint32,
   minSkill:     Uint32
 ): [] {
+  ledger.jobMode              = 1;
   ledger.minYearsRequired     = minYears;
   ledger.minEducationRequired = minEducation;
   ledger.minSkillRequired     = minSkill;
@@ -90,24 +139,30 @@ export transition setRequirements(
 }
 
 
+// ─── TRANSITION: SET WEIGHTED REQUIREMENTS ─────────────────
+//
+// Employer posts a job with weighted scoring.
+// Allows flexible "good in some areas, OK in others" matches.
+
+export transition setWeightedRequirements(
+  yearsW:       Uint32,
+  educationW:   Uint32,
+  skillW:       Uint32,
+  threshold:    Uint32
+): [] {
+  ledger.jobMode         = 2;
+  ledger.yearsWeight     = yearsW;
+  ledger.educationWeight = educationW;
+  ledger.skillWeight     = skillW;
+  ledger.scoreThreshold  = threshold;
+  ledger.jobActive       = true;
+}
+
+
 // ─── TRANSITION: APPLY ANONYMOUSLY ─────────────────────────
 //
-// Called by the CANDIDATE to apply for the job.
-//
-// CRITICAL — How privacy works here:
-//
-// The three "secret_" parameters are WITNESSES.
-// They match the "witness" inputs in qualificationCheck().
-// The Midnight runtime:
-//   1. Takes these values on the candidate's local machine
-//   2. Feeds them into the ZK circuit
-//   3. Generates a cryptographic proof
-//   4. Submits ONLY the proof + result to the blockchain
-//   5. The actual values (years, education, skill) are
-//      NEVER stored, NEVER transmitted, NEVER visible
-//
-// The employer sees:
-// "Candidate #[hash] result: true" — nothing else.
+// Candidate applies. Witnesses are PRIVATE.
+// Routes to strict or weighted check based on jobMode.
 
 export transition applyAnonymously(
   secret_years:     Uint32,
@@ -115,14 +170,30 @@ export transition applyAnonymously(
   secret_skill:     Uint32
 ): Boolean {
 
-  const qualified: Boolean = qualificationCheck(
-    secret_years,
-    secret_education,
-    secret_skill,
-    ledger.minYearsRequired,
-    ledger.minEducationRequired,
-    ledger.minSkillRequired
-  );
+  let qualified: Boolean = false;
+
+  if (ledger.jobMode == 1) {
+    qualified = strictQualification(
+      secret_years,
+      secret_education,
+      secret_skill,
+      ledger.minYearsRequired,
+      ledger.minEducationRequired,
+      ledger.minSkillRequired
+    );
+  }
+
+  if (ledger.jobMode == 2) {
+    qualified = weightedQualification(
+      secret_years,
+      secret_education,
+      secret_skill,
+      ledger.yearsWeight,
+      ledger.educationWeight,
+      ledger.skillWeight,
+      ledger.scoreThreshold
+    );
+  }
 
   ledger.totalApplications.increment(1);
 
@@ -134,9 +205,35 @@ export transition applyAnonymously(
 }
 
 
-// ─── TRANSITION: CLOSE JOB ─────────────────────────────────
+// ─── TRANSITION: PROVE SPECIFIC TRAIT ──────────────────────
 //
-// Called by employer to stop accepting applications.
+// Candidate proves ONE attribute meets threshold.
+// Useful when employer asks "do you have X?" without
+// needing full qualification check.
+
+export transition proveSpecificTrait(
+  secret_years:     Uint32,
+  secret_education: Uint32,
+  secret_skill:     Uint32,
+  attribute:        Uint32,
+  threshold:        Uint32
+): Boolean {
+
+  const proven: Boolean = selectiveDisclosure(
+    secret_years,
+    secret_education,
+    secret_skill,
+    attribute,
+    threshold
+  );
+
+  ledger.selectiveDisclosures.increment(1);
+
+  return proven;
+}
+
+
+// ─── TRANSITION: CLOSE JOB ─────────────────────────────────
 
 export transition closeJob(): [] {
   ledger.jobActive = false;
