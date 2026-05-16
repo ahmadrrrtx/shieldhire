@@ -95,3 +95,52 @@ export const PREPROD_CONFIG: MidnightNetworkConfig = {
   proofServerUri: 'http://localhost:6300',
   indexerUri:     'https://indexer.testnet-02.midnight.network/api/v1/graphql',
 };
+
+// ═══════════════════════════════════════════════════════════
+//  V2 — WEIGHTED SCORING & SELECTIVE DISCLOSURE
+// ═══════════════════════════════════════════════════════════
+
+// ─── JOB MODE ───────────────────────────────────────────────
+
+export enum JobMode {
+  Strict   = 1,  // All minimums must be met (AND)
+  Weighted = 2,  // Weighted score >= threshold
+}
+
+// ─── WEIGHTED REQUIREMENTS ──────────────────────────────────
+
+export interface WeightedJobRequirements {
+  mode: JobMode.Weighted;
+  yearsWeight:     number;
+  educationWeight: number;
+  skillWeight:     number;
+  scoreThreshold:  number;
+}
+
+// ─── SELECTIVE DISCLOSURE ATTRIBUTE ─────────────────────────
+
+export enum DisclosureAttribute {
+  Years     = 1,
+  Education = 2,
+  Skill     = 3,
+}
+
+export const AttributeLabels: Record<number, string> = {
+  1: 'Years of Experience',
+  2: 'Education Level',
+  3: 'Skill Score',
+};
+
+// ─── PROOF INSPECTOR DATA ───────────────────────────────────
+
+export interface ProofMetadata {
+  circuitName:       string;
+  witnessCount:      number;
+  publicInputCount:  number;
+  constraintCount:   number;
+  proofSizeBytes:    number;
+  generationTimeMs:  number;
+  verificationTimeMs: number;
+  proofType:         'ZK-SNARK' | 'PLONK' | 'STARK';
+  dataExposed:       string[];
+}
