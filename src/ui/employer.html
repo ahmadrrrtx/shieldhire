@@ -3,6 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ── META TAGS FOR SHARING ──────────────────────────── -->
+  <meta property="og:title" content="ShieldHire — Employer Portal">
+  <meta property="og:description" content="Post a job and let candidates apply anonymously with zero-knowledge proofs.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#6c5ce7">
+
+  <!-- ── FAVICON ────────────────────────────────────────── -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🛡️</text></svg>">
+
+  <!-- ── ENHANCEMENT PACK ───────────────────────────────── -->
+  <link rel="stylesheet" href="enhance.css">
+
   <title>ShieldHire — Employer Portal</title>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -148,6 +161,8 @@
     }
   </style>
 </head>
+<!-- ── ENHANCEMENT SCRIPT ─────────────────────────────── -->
+<script src="enhance.js"></script>
 <body>
 
   <nav class="navbar">
@@ -174,50 +189,108 @@
     </div>
 
     <!-- FORM CARD -->
-    <div class="card">
-      <h2>📋 Job Requirements → Public Ledger</h2>
-      <form id="jobForm">
+ <div class="card">
+  <h2>📋 Job Requirements → Public Ledger</h2>
+  <form id="jobForm">
 
-        <div class="field">
-          <label>Job Title</label>
-          <input type="text" id="jobTitle"
-                 placeholder="e.g. Senior Software Engineer" required />
-        </div>
-
-        <div class="field">
-          <label>Minimum Years of Experience</label>
-          <input type="number" id="minYears"
-                 min="0" max="30" placeholder="e.g. 3" required />
-          <div class="hint">Stored as Uint32 on the public ledger</div>
-        </div>
-
-        <div class="field">
-          <label>Minimum Education Level</label>
-          <select id="minEdu" required>
-            <option value="">Select minimum education...</option>
-            <option value="1">1 — High School Diploma</option>
-            <option value="2">2 — Associate's Degree</option>
-            <option value="3">3 — Bachelor's Degree</option>
-            <option value="4">4 — Master's Degree</option>
-            <option value="5">5 — PhD / Doctorate</option>
-          </select>
-          <div class="hint">Mapped to Uint32 (1–5) in Compact contract</div>
-        </div>
-
-        <div class="field">
-          <label>Minimum Skill Score (1 – 100)</label>
-          <input type="number" id="minSkill"
-                 min="1" max="100" placeholder="e.g. 70" required />
-          <div class="hint">Self-assessed technical proficiency threshold</div>
-        </div>
-
-        <button type="submit" class="btn-full" id="deployBtn">
-          🚀 Deploy to Midnight Network
-        </button>
-
-      </form>
+    <!-- ONLY ONE Qualification Mode dropdown -->
+    <div class="field">
+      <label>Qualification Mode</label>
+      <select id="jobMode" required>
+        <option value="1">Strict — All minimums required (AND)</option>
+        <option value="2">Weighted — Flexible scoring</option>
+      </select>
+      <div class="hint">
+        <strong>Strict:</strong> Candidate must meet ALL minimums.
+        <strong>Weighted:</strong> Calculated score must exceed threshold.
+      </div>
     </div>
 
+    <div class="field">
+      <label>Job Title</label>
+      <input type="text" id="jobTitle"
+             placeholder="e.g. Senior Software Engineer" required />
+    </div>
+
+    <div class="field">
+      <label>Minimum Years of Experience</label>
+      <input type="number" id="minYears"
+             min="0" max="30" placeholder="e.g. 3" required />
+      <div class="hint">Stored as Uint32 on the public ledger</div>
+    </div>
+
+    <div class="field">
+      <label>Minimum Education Level</label>
+      <select id="minEdu" required>
+        <option value="">Select minimum education...</option>
+        <option value="1">1 — High School Diploma</option>
+        <option value="2">2 — Associate's Degree</option>
+        <option value="3">3 — Bachelor's Degree</option>
+        <option value="4">4 — Master's Degree</option>
+        <option value="5">5 — PhD / Doctorate</option>
+      </select>
+      <div class="hint">Mapped to Uint32 (1–5) in Compact contract</div>
+    </div>
+
+    <div class="field">
+      <label>Minimum Skill Score (1 – 100)</label>
+      <input type="number" id="minSkill"
+             min="1" max="100" placeholder="e.g. 70" required />
+      <div class="hint">Self-assessed technical proficiency threshold</div>
+    </div>
+
+    <!-- Weighted scoring config (hidden by default) -->
+    <div id="weightedConfig" style="display:none;
+                                     padding: 20px;
+                                     background: rgba(192, 132, 252, 0.05);
+                                     border: 1px solid rgba(192, 132, 252, 0.2);
+                                     border-radius: 12px;
+                                     margin-bottom: 20px;">
+
+      <div style="font-size:14px; color:var(--neon-purple);
+                  font-weight:600; margin-bottom:14px;">
+        ⚖️ Weighted Scoring Configuration
+      </div>
+
+      <div class="field">
+        <label>Years Weight (1-10)</label>
+        <input type="number" id="yearsWeight"
+               min="1" max="10" value="3" />
+        <div class="hint">How important is experience?</div>
+      </div>
+
+      <div class="field">
+        <label>Education Weight (1-10)</label>
+        <input type="number" id="educationWeight"
+               min="1" max="10" value="2" />
+        <div class="hint">How important is education?</div>
+      </div>
+
+      <div class="field">
+        <label>Skill Weight (1-10)</label>
+        <input type="number" id="skillWeight"
+               min="1" max="10" value="5" />
+        <div class="hint">How important is technical skill?</div>
+      </div>
+
+      <div class="field">
+        <label>Score Threshold</label>
+        <input type="number" id="scoreThreshold"
+               min="1" max="2000" value="400" />
+        <div class="hint">
+          Candidate's weighted score must exceed this.
+          Formula: years×W1 + education×W2 + skill×W3
+        </div>
+      </div>
+
+    </div>
+
+    <button type="submit" class="btn-full" id="deployBtn">
+      🚀 Deploy to Midnight Network
+    </button>
+
+  </form>
+</div>
     <!-- LOADING -->
     <div class="loading" id="loading">
       <div class="spinner"></div>
@@ -279,71 +352,95 @@
 
   </div>
 
-  <script type="module">
+<script type="module">
 
-    // Education label map (mirrors TypeScript types.ts)
-    const EDU_LABELS = {
-      '1': 'High School Diploma',
-      '2': "Associate's Degree",
-      '3': "Bachelor's Degree",
-      '4': "Master's Degree",
-      '5': 'PhD / Doctorate',
-    };
+  // Education label map (mirrors TypeScript types.ts)
+  const EDU_LABELS = {
+    '1': 'High School Diploma',
+    '2': "Associate's Degree",
+    '3': "Bachelor's Degree",
+    '4': "Master's Degree",
+    '5': 'PhD / Doctorate',
+  };
 
-    // Generate mock hash (mirrors contract-api.ts helper)
-    function genHash(len = 40) {
-      return '0x' + Array.from(
-        { length: len },
-        () => Math.floor(Math.random() * 16).toString(16)
-      ).join('');
+  // Generate mock hash (mirrors contract-api.ts helper)
+  function genHash(len = 40) {
+    return '0x' + Array.from(
+      { length: len },
+      () => Math.floor(Math.random() * 16).toString(16)
+    ).join('');
+  }
+
+  // Toggle weighted config visibility based on job mode
+  document.getElementById('jobMode').addEventListener('change', (e) => {
+    const weightedConfig = document.getElementById('weightedConfig');
+    if (e.target.value === '2') {
+      weightedConfig.style.display = 'block';
+    } else {
+      weightedConfig.style.display = 'none';
+    }
+  });
+
+  // Form submission handler
+  document.getElementById('jobForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const title = document.getElementById('jobTitle').value.trim();
+    const years = document.getElementById('minYears').value;
+    const edu   = document.getElementById('minEdu').value;
+    const skill = document.getElementById('minSkill').value;
+    const mode  = parseInt(document.getElementById('jobMode').value);
+
+    let weightedConfig = null;
+    if (mode === 2) {
+      weightedConfig = {
+        yearsWeight:     parseInt(document.getElementById('yearsWeight').value),
+        educationWeight: parseInt(document.getElementById('educationWeight').value),
+        skillWeight:     parseInt(document.getElementById('skillWeight').value),
+        scoreThreshold:  parseInt(document.getElementById('scoreThreshold').value),
+      };
+      console.log('[ShieldHire] Job mode: WEIGHTED');
+      console.log('[ShieldHire] Weighted config:', weightedConfig);
+    } else {
+      console.log('[ShieldHire] Job mode: STRICT (all minimums required)');
     }
 
-    document.getElementById('jobForm')
-      .addEventListener('submit', async (e) => {
-        e.preventDefault();
+    document.getElementById('deployBtn').disabled = true;
+    document.getElementById('loading').classList.add('show');
 
-        const title = document.getElementById('jobTitle').value.trim();
-        const years = document.getElementById('minYears').value;
-        const edu   = document.getElementById('minEdu').value;
-        const skill = document.getElementById('minSkill').value;
+    await new Promise(r => setTimeout(r, 3000));
 
-        // Show loading, disable button
-        document.getElementById('deployBtn').disabled = true;
-        document.getElementById('loading').classList.add('show');
+    const contractAddress = genHash(40);
 
-        // Simulate blockchain deployment (3 seconds)
-        await new Promise(r => setTimeout(r, 3000));
+    const payload = {
+      requirements: {
+        minYearsExperience: parseInt(years),
+        minEducationLevel:  parseInt(edu),
+        minSkillScore:      parseInt(skill),
+      },
+      jobMode: mode,
+      weightedConfig: weightedConfig,
+      deployment: {
+        contractAddress,
+        transactionHash: genHash(64),
+        networkId: 'preprod',
+        timestamp: new Date().toISOString(),
+      },
+      jobTitle: title,
+    };
 
-        const contractAddress = genHash(40);
+    localStorage.setItem('shieldhire_deployment', JSON.stringify(payload));
 
-        // Persist for candidate page (mirrors contract-api.ts)
-        const payload = {
-          requirements: {
-            minYearsExperience: parseInt(years),
-            minEducationLevel:  parseInt(edu),
-            minSkillScore:      parseInt(skill),
-          },
-          deployment: {
-            contractAddress,
-            transactionHash: genHash(64),
-            networkId: 'preprod',
-            timestamp: new Date().toISOString(),
-          },
-          jobTitle: title,
-        };
-        localStorage.setItem('shieldhire_deployment', JSON.stringify(payload));
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('rTitle').textContent = title;
+    document.getElementById('rYears').textContent = years + ' years';
+    document.getElementById('rEdu').textContent   = EDU_LABELS[edu] || edu;
+    document.getElementById('rSkill').textContent = skill + ' / 100';
+    document.getElementById('rAddr').textContent  = contractAddress;
+    document.getElementById('result').classList.add('show');
+  });
 
-        // Hide loading, show result
-        document.getElementById('loading').classList.remove('show');
-        document.getElementById('rTitle').textContent = title;
-        document.getElementById('rYears').textContent = years + ' years';
-        document.getElementById('rEdu').textContent   = EDU_LABELS[edu] || edu;
-        document.getElementById('rSkill').textContent = skill + ' / 100';
-        document.getElementById('rAddr').textContent  = contractAddress;
-        document.getElementById('result').classList.add('show');
-      });
-
-  </script>
-
+</script>
+  <script src="enhance.js"></script>
 </body>
 </html>
