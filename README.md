@@ -179,7 +179,7 @@ architecture**:
 
 ## License
 
-MIT — Built with ❤️ for MLH Midnight Hackathon 2025
+MIT — Built with ❤️ for MLH Midnight Hackathon 2026
 
 ---
 
