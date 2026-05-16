@@ -2,11 +2,8 @@
 ## Anonymous Resume Verification on Midnight Network
 
 > **"Prove Your Skills. Protect Your Identity."**
-<<<<<<< Updated upstream
 > Built for MLH Midnight Hackathon — May 2026
 =======
-> Built for Midnight Hackathon 2026
-
 
 
 ## The Problem
@@ -31,11 +28,8 @@ the process was actually blind.
 ## The Solution
 
 ShieldHire uses Midnight Network's zero-knowledge proof architecture
-<<<<<<< Updated upstream
 to create the first **mathematically** anonymous hiring pipeline:
 =======
-to create the first **mathematically anonymous** hiring pipeline:
->>>>>>> Stashed changes
 
 ```
 Employer sets requirements  →  Written to PUBLIC ledger
@@ -99,7 +93,6 @@ Real-time dashboard showing:
 - Personal data points exposed: **always 0**
 - Complete ledger state visibility
 - Live proof log feed
->>>>>>> Stashed changes
 
 ---
 
@@ -107,7 +100,6 @@ Real-time dashboard showing:
 
 ### Compact Smart Contract (`contract/shieldhire.compact`)
 
-<<<<<<< Updated upstream
 ```
 circuit qualificationCheck(
   witness candidateYears:     Uint32,   ← PRIVATE (never revealed)
@@ -279,7 +271,6 @@ npm run start
 =======
 See `DEPLOY.md` for detailed deployment instructions.
 
->>>>>>> Stashed changes
 ---
 
 ## Demo Flow
@@ -360,7 +351,6 @@ architecture** with full UI/UX:
 
 ---
 
-<<<<<<< Updated upstream
 ## Tracks Submitted
 
 - 🏆 **Best Use of Midnight Network** — Core use of dual ledger and ZK proofs
@@ -404,7 +394,6 @@ post-hackathon production version:
 
 - 🏆 **Best Use of Midnight Network** — Core use of dual ledger and ZK proofs
 - 🏆 **Best Beginner Hack** — First-time Midnight builders
->>>>>>> Stashed changes
 - 🏆 **Social Impact** — Solving real-world hiring discrimination
 
 ---
@@ -416,7 +405,6 @@ post-hackathon production version:
 | **Ahmad** | Lead Builder, Smart Contract Developer, Product Strategist | ahmadrrrtx333@gmail.com | [@ahmadrrrtx](https://github.com/ahmadrrrtx) |
 | **Diya Majee** | Co-Builder, Research Lead, UI/UX Designer | diyamajee0391@gmail.com | [@diyamajee-spec](https://github.com/diyamajee-spec) |
 
-<<<<<<< Updated upstream
 ## License
 
 MIT — Built with ❤️ for MLH Midnight Hackathon 2026
@@ -426,7 +414,6 @@ MIT — Built with ❤️ for MLH Midnight Hackathon 2026
 ## License
 
 MIT — Built with ❤️ for Midnight Hackathon 2026
->>>>>>> Stashed changes
 
 ---
 
@@ -435,7 +422,7 @@ MIT — Built with ❤️ for Midnight Hackathon 2026
 - [Midnight Network](https://midnight.network) — for building the future of data protection
 - [MLH](https://mlh.io) — for hosting amazing hackathons
 - All researchers who documented hiring discrimination data
-<<<<<<< Updated upstream
+
 =======
 - The Compact language team for excellent documentation
 
