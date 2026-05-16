@@ -3,6 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ── META TAGS FOR SHARING ──────────────────────────── -->
+  <meta property="og:title" content="ShieldHire — Public Ledger Analytics">
+  <meta property="og:description" content="Anonymous statistics from the Midnight blockchain. Zero personal data exposed.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#6c5ce7">
+
+  <!-- ── FAVICON ────────────────────────────────────────── -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🛡️</text></svg>">
+
+  <!-- ── ENHANCEMENT PACK ───────────────────────────────── -->
+  <link rel="stylesheet" href="enhance.css">
+
   <title>ShieldHire — Public Ledger Analytics</title>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -208,6 +221,8 @@
     }
   </style>
 </head>
+<!-- ── ENHANCEMENT SCRIPT ─────────────────────────────── -->
+<script src="enhance.js"></script>
 <body>
 
   <nav class="navbar">
@@ -225,7 +240,9 @@
        style="color:var(--muted);text-decoration:none;font-size:14px;">
       👤 Apply
     </a>
-    <span style="color:var(--muted);font-size:14px;">📊 Ledger</span>
+    <span style="color:var(--muted);font-size:14px;">
+  <span class="live-pulse"></span>📊 Public Ledger Analytics
+</span>
   </div>
 </nav>
 
@@ -432,6 +449,6 @@
       `.trim();
     }
   </script>
-
+  <script src="enhance.js"></script>
 </body>
 </html>
