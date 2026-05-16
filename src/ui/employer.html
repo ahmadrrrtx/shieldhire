@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShieldHire — Employer Portal</title>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --purple:    #6c5ce7;
+      --purple-lt: #a29bfe;
+      --teal:      #00cec9;
+      --teal-lt:   #81ecec;
+      --bg:        #0a0a0f;
+      --bg-card:   rgba(20,20,35,0.85);
+      --border:    rgba(108,92,231,0.18);
+      --text:      #e0e0e0;
+      --muted:     #808090;
+      --faint:     #404050;
+    }
+    body {
+      font-family:'Segoe UI',system-ui,sans-serif;
+      background:var(--bg); color:var(--text); min-height:100vh;
+    }
+
+    /* NAVBAR */
+    .navbar {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:18px 40px;
+  background:rgba(10,10,20,.95);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  gap: 16px;
+}
+.logo {
+  font-size:22px; font-weight:800;
+  background:linear-gradient(135deg,var(--purple),var(--purple-lt));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text; text-decoration:none;
+  flex-shrink: 0;
+}
+.logo span {
+  background:linear-gradient(135deg,var(--teal),var(--teal-lt));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+    /* LAYOUT */
+    .container { max-width:680px; margin:44px auto; padding:0 20px; }
+    .back { display:inline-block; color:var(--purple);
+            text-decoration:none; font-size:14px; margin-bottom:24px; }
+    .back:hover { text-decoration:underline; }
+    .page-head { text-align:center; margin-bottom:36px; }
+    .page-head .ico { font-size:52px; margin-bottom:14px; }
+    .page-head h1 { font-size:30px; margin-bottom:8px; }
+    .page-head p { color:var(--muted); font-size:15px; }
+
+    /* CARD */
+    .card {
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:18px; padding:34px;
+      margin-bottom:24px;
+    }
+    .card h2 { font-size:18px; color:var(--purple-lt); margin-bottom:24px; }
+
+    /* FORM */
+    .field { margin-bottom:22px; }
+    .field label {
+      display:block; font-size:14px; color:var(--muted);
+      font-weight:600; margin-bottom:8px;
+    }
+    .field input, .field select {
+      width:100%; padding:13px 16px;
+      background:rgba(10,10,20,.8);
+      border:1px solid rgba(108,92,231,.22);
+      border-radius:10px; color:var(--text);
+      font-size:15px; transition:border-color .25s;
+    }
+    .field input:focus, .field select:focus {
+      outline:none; border-color:var(--purple);
+    }
+    .field select option { background:#1a1a2e; }
+    .field .hint { font-size:12px; color:var(--faint); margin-top:5px; }
+
+    /* BUTTON */
+    .btn-full {
+      width:100%; padding:16px; border-radius:12px;
+      font-size:16px; font-weight:700; cursor:pointer;
+      border:none;
+      background:linear-gradient(135deg,var(--purple),var(--purple-lt));
+      color:#fff; transition:all .28s;
+    }
+    .btn-full:hover {
+      transform:translateY(-2px);
+      box-shadow:0 12px 32px rgba(108,92,231,.42);
+    }
+    .btn-full:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+
+    /* LOADING */
+    .loading { display:none; text-align:center; padding:28px; }
+    .loading.show { display:block; }
+    .spinner {
+      width:44px; height:44px;
+      border:3px solid rgba(108,92,231,.2);
+      border-top-color:var(--purple);
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin:0 auto 18px;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .loading p { color:var(--purple-lt); font-weight:600; }
+    .loading small { color:var(--faint); font-size:13px; }
+
+    /* RESULT */
+    .result { display:none; }
+    .result.show { display:block; }
+    .result-card {
+      background:rgba(0,206,201,.07);
+      border:1px solid rgba(0,206,201,.28);
+      border-radius:18px; padding:34px;
+    }
+    .result-card h2 { color:var(--teal); margin-bottom:8px; }
+    .result-card .sub { color:var(--muted); font-size:14px; margin-bottom:22px; }
+    .row {
+      display:flex; justify-content:space-between;
+      padding:11px 0;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      font-size:14px;
+    }
+    .row:last-child { border-bottom:none; }
+    .row .lbl { color:var(--muted); }
+    .row .val { font-weight:600; }
+    .chain-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      margin-top:18px; padding:8px 16px;
+      background:rgba(108,92,231,.1);
+      border:1px solid rgba(108,92,231,.22);
+      border-radius:8px; font-size:12px; color:var(--purple-lt);
+    }
+    .note {
+      margin-top:18px; padding:14px;
+      background:rgba(108,92,231,.06);
+      border-radius:10px;
+      font-size:13px; color:var(--muted); line-height:1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+  <a href="index.html" class="logo">Shield<span>Hire</span></a>
+  <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:flex-end;">
+    <a href="index.html"
+       style="color:var(--muted);text-decoration:none;font-size:14px;">
+      ← Home
+    </a>
+    <a href="analytics.html"
+       style="color:var(--muted);text-decoration:none;font-size:14px;">
+      📊 Ledger
+    </a>
+    <span style="color:var(--muted);font-size:14px;">🏢 Employer Portal</span>
+  </div>
+</nav>
+  <div class="container">
+    <a href="index.html" class="back">← Back to Home</a>
+
+    <div class="page-head">
+      <div class="ico">🏢</div>
+      <h1>Post a Job</h1>
+      <p>Set your requirements. The smart contract handles anonymous verification.</p>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="card">
+      <h2>📋 Job Requirements → Public Ledger</h2>
+      <form id="jobForm">
+
+        <div class="field">
+          <label>Job Title</label>
+          <input type="text" id="jobTitle"
+                 placeholder="e.g. Senior Software Engineer" required />
+        </div>
+
+        <div class="field">
+          <label>Minimum Years of Experience</label>
+          <input type="number" id="minYears"
+                 min="0" max="30" placeholder="e.g. 3" required />
+          <div class="hint">Stored as Uint32 on the public ledger</div>
+        </div>
+
+        <div class="field">
+          <label>Minimum Education Level</label>
+          <select id="minEdu" required>
+            <option value="">Select minimum education...</option>
+            <option value="1">1 — High School Diploma</option>
+            <option value="2">2 — Associate's Degree</option>
+            <option value="3">3 — Bachelor's Degree</option>
+            <option value="4">4 — Master's Degree</option>
+            <option value="5">5 — PhD / Doctorate</option>
+          </select>
+          <div class="hint">Mapped to Uint32 (1–5) in Compact contract</div>
+        </div>
+
+        <div class="field">
+          <label>Minimum Skill Score (1 – 100)</label>
+          <input type="number" id="minSkill"
+                 min="1" max="100" placeholder="e.g. 70" required />
+          <div class="hint">Self-assessed technical proficiency threshold</div>
+        </div>
+
+        <button type="submit" class="btn-full" id="deployBtn">
+          🚀 Deploy to Midnight Network
+        </button>
+
+      </form>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Deploying smart contract to Midnight preprod...</p>
+      <small>Calling setRequirements() transition on-chain</small>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result" id="result">
+      <div class="result-card">
+        <h2>✅ Contract Deployed</h2>
+        <p class="sub">
+          Requirements are now on the public ledger.
+          Candidates can apply anonymously.
+        </p>
+        <div class="row">
+          <span class="lbl">Job Title</span>
+          <span class="val" id="rTitle">—</span>
+        </div>
+        <div class="row">
+          <span class="lbl">Min. Experience</span>
+          <span class="val" id="rYears">—</span>
+        </div>
+        <div class="row">
+          <span class="lbl">Min. Education</span>
+          <span class="val" id="rEdu">—</span>
+        </div>
+        <div class="row">
+          <span class="lbl">Min. Skill Score</span>
+          <span class="val" id="rSkill">—</span>
+        </div>
+        <div class="row">
+          <span class="lbl">Contract Address</span>
+          <span class="val" id="rAddr"
+                style="font-size:11px; color:var(--purple-lt);">—</span>
+        </div>
+        <div class="row">
+          <span class="lbl">Network</span>
+          <span class="val" style="color:var(--teal);">
+            🟢 Midnight Preprod Testnet
+          </span>
+        </div>
+        <div class="chain-badge">
+          🌙 Verified on Midnight Preprod Testnet
+        </div>
+        <div class="note">
+  📤 Direct candidates to the Candidate Portal.
+  Their identity will be protected by zero-knowledge proofs.
+  You will only see a pass/fail result per anonymous applicant.
+  <br><br>
+  📊 View anonymous application statistics on the
+  <a href="analytics.html"
+     style="color:var(--purple-lt);text-decoration:none;">
+    Public Ledger Analytics page →
+  </a>
+</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+
+    // Education label map (mirrors TypeScript types.ts)
+    const EDU_LABELS = {
+      '1': 'High School Diploma',
+      '2': "Associate's Degree",
+      '3': "Bachelor's Degree",
+      '4': "Master's Degree",
+      '5': 'PhD / Doctorate',
+    };
+
+    // Generate mock hash (mirrors contract-api.ts helper)
+    function genHash(len = 40) {
+      return '0x' + Array.from(
+        { length: len },
+        () => Math.floor(Math.random() * 16).toString(16)
+      ).join('');
+    }
+
+    document.getElementById('jobForm')
+      .addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const title = document.getElementById('jobTitle').value.trim();
+        const years = document.getElementById('minYears').value;
+        const edu   = document.getElementById('minEdu').value;
+        const skill = document.getElementById('minSkill').value;
+
+        // Show loading, disable button
+        document.getElementById('deployBtn').disabled = true;
+        document.getElementById('loading').classList.add('show');
+
+        // Simulate blockchain deployment (3 seconds)
+        await new Promise(r => setTimeout(r, 3000));
+
+        const contractAddress = genHash(40);
+
+        // Persist for candidate page (mirrors contract-api.ts)
+        const payload = {
+          requirements: {
+            minYearsExperience: parseInt(years),
+            minEducationLevel:  parseInt(edu),
+            minSkillScore:      parseInt(skill),
+          },
+          deployment: {
+            contractAddress,
+            transactionHash: genHash(64),
+            networkId: 'preprod',
+            timestamp: new Date().toISOString(),
+          },
+          jobTitle: title,
+        };
+        localStorage.setItem('shieldhire_deployment', JSON.stringify(payload));
+
+        // Hide loading, show result
+        document.getElementById('loading').classList.remove('show');
+        document.getElementById('rTitle').textContent = title;
+        document.getElementById('rYears').textContent = years + ' years';
+        document.getElementById('rEdu').textContent   = EDU_LABELS[edu] || edu;
+        document.getElementById('rSkill').textContent = skill + ' / 100';
+        document.getElementById('rAddr').textContent  = contractAddress;
+        document.getElementById('result').classList.add('show');
+      });
+
+  </script>
+
+</body>
+</html>

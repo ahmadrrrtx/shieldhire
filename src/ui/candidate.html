@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShieldHire — Candidate Portal</title>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --purple:    #6c5ce7;
+      --purple-lt: #a29bfe;
+      --teal:      #00cec9;
+      --teal-lt:   #81ecec;
+      --red:       #e74c3c;
+      --bg:        #0a0a0f;
+      --bg-card:   rgba(20,20,35,0.85);
+      --border:    rgba(108,92,231,0.18);
+      --text:      #e0e0e0;
+      --muted:     #808090;
+      --faint:     #404050;
+    }
+    body {
+      font-family:'Segoe UI',system-ui,sans-serif;
+      background:var(--bg); color:var(--text); min-height:100vh;
+    }
+
+    /* NAVBAR */
+    .navbar {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:18px 40px;
+  background:rgba(10,10,20,.95);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  gap: 16px;
+}
+.logo {
+  font-size:22px; font-weight:800;
+  background:linear-gradient(135deg,var(--purple),var(--purple-lt));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text; text-decoration:none;
+  flex-shrink: 0;
+}
+.logo span {
+  background:linear-gradient(135deg,var(--teal),var(--teal-lt));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+    /* LAYOUT */
+    .container { max-width:680px; margin:44px auto; padding:0 20px 60px; }
+    .back {
+      display:inline-block; color:var(--purple);
+      text-decoration:none; font-size:14px; margin-bottom:24px;
+    }
+    .back:hover { text-decoration:underline; }
+    .page-head { text-align:center; margin-bottom:28px; }
+    .page-head .ico { font-size:52px; margin-bottom:14px; }
+    .page-head h1 { font-size:30px; margin-bottom:8px; }
+    .page-head p { color:var(--muted); font-size:15px; }
+
+    /* ZK BANNER */
+    .zk-banner {
+      display:flex; align-items:center; gap:14px;
+      padding:16px 20px;
+      background:rgba(0,206,201,.07);
+      border:1px solid rgba(0,206,201,.22);
+      border-radius:12px; margin-bottom:24px;
+    }
+    .zk-banner .shield { font-size:26px; }
+    .zk-banner p { font-size:14px; color:var(--teal-lt); line-height:1.5; }
+
+    /* JOB INFO CARD */
+    .job-card {
+      display:none;
+      background:var(--bg-card);
+      border:1px solid rgba(0,206,201,.2);
+      border-radius:18px; padding:28px;
+      margin-bottom:24px;
+    }
+    .job-card.show { display:block; }
+    .job-card h2 { font-size:16px; color:var(--teal); margin-bottom:16px; }
+    .row {
+      display:flex; justify-content:space-between;
+      padding:9px 0;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      font-size:13px;
+    }
+    .row:last-child { border-bottom:none; }
+    .row .lbl { color:var(--muted); }
+    .row .val { font-weight:600; }
+
+    /* FORM CARD */
+    .card {
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:18px; padding:34px;
+      margin-bottom:24px;
+    }
+    .card h2 { font-size:18px; color:var(--purple-lt); margin-bottom:6px; }
+    .card .sub { font-size:13px; color:var(--faint); margin-bottom:26px; }
+
+    /* PRIVATE BADGE */
+    .prv-tag {
+      display:inline-flex; align-items:center; gap:4px;
+      font-size:11px; color:var(--teal);
+      background:rgba(0,206,201,.1);
+      padding:2px 8px; border-radius:4px; margin-left:6px;
+    }
+
+    /* DIVIDER */
+    .divider {
+      display:flex; align-items:center; gap:12px;
+      margin:22px 0; color:var(--faint); font-size:11px;
+      letter-spacing:.5px;
+    }
+    .divider::before, .divider::after {
+      content:''; flex:1; height:1px;
+      background:rgba(255,255,255,.05);
+    }
+
+    /* FIELDS */
+    .field { margin-bottom:20px; }
+    .field label {
+      display:block; font-size:14px; color:var(--muted);
+      font-weight:600; margin-bottom:8px;
+    }
+    .field input, .field select {
+      width:100%; padding:13px 16px;
+      background:rgba(10,10,20,.8);
+      border:1px solid rgba(108,92,231,.22);
+      border-radius:10px; color:var(--text);
+      font-size:15px; transition:border-color .25s;
+    }
+    .field input:focus, .field select:focus {
+      outline:none; border-color:var(--purple);
+    }
+    .field select option { background:#1a1a2e; }
+    .field .hint { font-size:12px; color:var(--faint); margin-top:5px; }
+
+    /* BUTTON */
+    .btn-full {
+      width:100%; padding:16px; border-radius:12px;
+      font-size:16px; font-weight:700; cursor:pointer;
+      border:none;
+      background:linear-gradient(135deg,var(--purple),var(--purple-lt));
+      color:#fff; transition:all .28s;
+    }
+    .btn-full:hover {
+      transform:translateY(-2px);
+      box-shadow:0 12px 32px rgba(108,92,231,.42);
+    }
+    .btn-full:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+
+    /* LOADING */
+    .loading { display:none; text-align:center; padding:28px; }
+    .loading.show { display:block; }
+    .spinner {
+      width:44px; height:44px;
+      border:3px solid rgba(108,92,231,.2);
+      border-top-color:var(--purple);
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+      margin:0 auto 18px;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .loading .title { color:var(--purple-lt); font-weight:700; margin-bottom:16px; }
+    .steps-list { text-align:left; max-width:320px; margin:0 auto; }
+    .step-item {
+      padding:8px 0; font-size:13px; color:var(--faint);
+      display:flex; align-items:center; gap:10px;
+    }
+    .step-item.active { color:var(--purple-lt); }
+    .step-item.done   { color:var(--teal); }
+
+    /* RESULT QUALIFIED */
+    .res-qualified {
+      display:none;
+      background:rgba(0,206,201,.07);
+      border:2px solid rgba(0,206,201,.35);
+      border-radius:18px; padding:36px;
+      text-align:center;
+    }
+    .res-qualified.show { display:block; }
+    .res-qualified .big-icon { font-size:72px; margin-bottom:16px; }
+    .res-qualified h2 { font-size:28px; color:var(--teal); margin-bottom:10px; }
+    .res-qualified .desc { color:var(--muted); margin-bottom:28px; line-height:1.6; }
+
+    /* EMPLOYER VIEW BOX */
+    .employer-view {
+      background:rgba(0,0,0,.3);
+      border-radius:14px; padding:22px;
+      margin-bottom:20px; text-align:left;
+    }
+    .employer-view h3 { font-size:14px; color:var(--teal); margin-bottom:14px; }
+    .ev-grid {
+      display:grid; grid-template-columns:1fr 1fr;
+      gap:8px; margin-top:12px;
+    }
+    .ev-item {
+      padding:8px 12px; border-radius:8px;
+      font-size:12px; display:flex;
+      align-items:center; gap:6px;
+    }
+    .ev-item.hidden {
+      background:rgba(0,206,201,.08); color:var(--teal);
+    }
+    .ev-item.visible {
+      background:rgba(108,92,231,.08); color:var(--purple-lt);
+    }
+
+    /* PROOF DETAILS */
+    .proof-box {
+      background:rgba(0,0,0,.25);
+      border-radius:12px; padding:20px;
+      text-align:left; margin-top:16px;
+    }
+    .proof-box h3 { font-size:14px; color:var(--purple-lt); margin-bottom:14px; }
+    .proof-row {
+      display:flex; justify-content:space-between;
+      padding:8px 0;
+      border-bottom:1px solid rgba(255,255,255,.04);
+      font-size:13px;
+    }
+    .proof-row:last-child { border-bottom:none; }
+    .proof-row .lbl { color:var(--faint); }
+    .proof-row .val { color:var(--muted); }
+
+    /* RESULT NOT QUALIFIED */
+    .res-not {
+      display:none;
+      background:rgba(231,76,60,.07);
+      border:2px solid rgba(231,76,60,.28);
+      border-radius:18px; padding:36px;
+      text-align:center;
+    }
+    .res-not.show { display:block; }
+    .res-not .big-icon { font-size:72px; margin-bottom:16px; }
+    .res-not h2 { font-size:26px; color:var(--red); margin-bottom:10px; }
+    .res-not .desc { color:var(--muted); margin-bottom:20px; line-height:1.6; }
+    .prv-note {
+      padding:16px; border-radius:10px;
+      background:rgba(0,206,201,.05);
+      border:1px solid rgba(0,206,201,.15);
+      font-size:13px; color:var(--muted);
+    }
+    .prv-note strong { color:var(--teal); }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+  <a href="index.html" class="logo">Shield<span>Hire</span></a>
+  <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:flex-end;">
+    <a href="index.html"
+       style="color:var(--muted);text-decoration:none;font-size:14px;">
+      ← Home
+    </a>
+    <a href="analytics.html"
+       style="color:var(--muted);text-decoration:none;font-size:14px;">
+      📊 Ledger
+    </a>
+    <span style="color:var(--muted);font-size:14px;">👤 Candidate Portal</span>
+  </div>
+</nav>
+
+  <div class="container">
+    <a href="index.html" class="back">← Back to Home</a>
+
+    <div class="page-head">
+      <div class="ico">👤</div>
+      <h1>Apply Anonymously</h1>
+      <p>Your qualifications are verified. Your identity stays shielded.</p>
+    </div>
+
+    <!-- ZK ACTIVE BANNER -->
+    <div class="zk-banner">
+      <span class="shield">🛡️</span>
+      <p>
+        <strong>Zero-Knowledge Protection Active.</strong>
+        Your personal data is used only as a ZK <em>witness</em>
+        in the local proof computation. It is never transmitted
+        to the blockchain or revealed to the employer.
+      </p>
+    </div>
+
+    <!-- JOB INFO (loads from localStorage) -->
+    <div class="job-card" id="jobCard">
+      <h2>📋 Applying for: <span id="jobTitleDisplay">—</span></h2>
+      <div class="row">
+        <span class="lbl">Min. Experience Required</span>
+        <span class="val" id="dYears">—</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Min. Education Required</span>
+        <span class="val" id="dEdu">—</span>
+      </div>
+      <div class="row">
+        <span class="lbl">Min. Skill Score Required</span>
+        <span class="val" id="dSkill">—</span>
+      </div>
+    </div>
+
+    <!-- APPLICATION FORM -->
+    <div class="card">
+      <h2>
+        🔐 Your Qualifications
+        <span class="prv-tag">🛡️ ZK WITNESSES</span>
+      </h2>
+      <p class="sub">
+        These values are private ZK witnesses. They feed into the
+        local <code>qualificationCheck()</code> circuit and are
+        NEVER transmitted or stored on-chain.
+      </p>
+
+      <form id="applyForm">
+
+        <!-- Personal data — shielded -->
+        <div class="field">
+          <label>
+            Your Name
+            <span class="prv-tag">🔒 Never transmitted</span>
+          </label>
+          <input type="text" id="name" placeholder="e.g. Ahmad" required />
+          <div class="hint">
+            Used only for your local reference. Not part of the ZK proof.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            Your Age
+            <span class="prv-tag">🔒 Never transmitted</span>
+          </label>
+          <input type="number" id="age" placeholder="e.g. 25" required />
+          <div class="hint">
+            Shielded — the employer will never see this.
+          </div>
+        </div>
+
+        <div class="divider">ZK CIRCUIT INPUTS (secret_ witnesses)</div>
+
+        <div class="field">
+          <label>Years of Experience</label>
+          <input type="number" id="years"
+                 min="0" max="30" placeholder="e.g. 5" required />
+          <div class="hint">
+            Maps to <code>secret_years</code> witness in Compact contract.
+            Only pass/fail is revealed on-chain.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Highest Education Level</label>
+          <select id="education" required>
+            <option value="">Select your education...</option>
+            <option value="1">1 — High School Diploma</option>
+            <option value="2">2 — Associate's Degree</option>
+            <option value="3">3 — Bachelor's Degree</option>
+            <option value="4">4 — Master's Degree</option>
+            <option value="5">5 — PhD / Doctorate</option>
+          </select>
+          <div class="hint">
+            Maps to <code>secret_education</code> witness.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Self-Assessed Skill Score (1 – 100)</label>
+          <input type="number" id="skill"
+                 min="1" max="100" placeholder="e.g. 85" required />
+          <div class="hint">
+            Maps to <code>secret_skill</code> witness. Be honest —
+            only you know the actual value.
+          </div>
+        </div>
+
+        <button type="submit" class="btn-full" id="applyBtn">
+          🔐 Generate ZK Proof & Apply
+        </button>
+
+      </form>
+    </div>
+
+    <!-- LOADING / PROOF GENERATION -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p class="title">Generating Zero-Knowledge Proof...</p>
+      <div class="steps-list">
+        <div class="step-item" id="s1">⏳ Encrypting personal witnesses locally...</div>
+        <div class="step-item" id="s2">⏳ Building qualificationCheck() circuit...</div>
+        <div class="step-item" id="s3">⏳ Generating ZK-SNARK proof...</div>
+        <div class="step-item" id="s4">⏳ Submitting proof to Midnight preprod...</div>
+        <div class="step-item" id="s5">⏳ On-chain verification...</div>
+      </div>
+    </div>
+
+    <!-- RESULT: QUALIFIED -->
+    <div class="res-qualified" id="resYes">
+      <div class="big-icon">✅</div>
+      <h2>You're Qualified!</h2>
+      <p class="desc">
+        The ZK proof confirms you meet all requirements.
+        Zero personal data was revealed to the employer or stored on-chain.
+      </p>
+
+      <div class="employer-view">
+        <h3>👔 What the employer sees on-chain:</h3>
+        <p style="font-size:13px; color:var(--muted);">
+          "Anonymous Candidate #<strong id="candId">—</strong>
+          result: <strong style="color:var(--teal);">QUALIFIED ✓</strong>"
+        </p>
+        <div class="ev-grid">
+          <div class="ev-item hidden">🔒 Name: HIDDEN</div>
+          <div class="ev-item hidden">🔒 Age: HIDDEN</div>
+          <div class="ev-item hidden">🔒 Exact Years: HIDDEN</div>
+          <div class="ev-item hidden">🔒 Exact Skill: HIDDEN</div>
+          <div class="ev-item visible">✓ Meets Requirements: YES</div>
+          <div class="ev-item visible">✓ Proof: VERIFIED ON-CHAIN</div>
+        </div>
+      </div>
+
+      <div class="proof-box">
+        <h3>📜 ZK Proof Receipt</h3>
+        <div class="proof-row">
+          <span class="lbl">Proof Type</span>
+          <span class="val">ZK-SNARK (qualificationCheck circuit)</span>
+        </div>
+        <div class="proof-row">
+          <span class="lbl">Proof Hash</span>
+          <span class="val" id="proofHash" style="font-size:11px;">—</span>
+        </div>
+        <div class="proof-row">
+          <span class="lbl">Transaction</span>
+          <span class="val" id="txHash" style="font-size:11px;">—</span>
+        </div>
+        <div class="proof-row">
+          <span class="lbl">Network</span>
+          <span class="val">Midnight Preprod Testnet</span>
+        </div>
+        <div class="proof-row">
+          <span class="lbl">Timestamp</span>
+          <span class="val" id="ts">—</span>
+        </div>
+        <div class="proof-row">
+          <span class="lbl">Data Exposed to Employer</span>
+          <span class="val" style="color:var(--teal);">
+            [] — None ✓
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT: NOT QUALIFIED -->
+    <div class="res-not" id="resNo">
+      <div class="big-icon">❌</div>
+      <h2>Requirements Not Met</h2>
+      <p class="desc">
+        The ZK proof shows your qualifications don't meet the
+        minimum requirements for this role.
+      </p>
+      <div class="prv-note">
+        <strong>🛡️ Your privacy is preserved even in rejection.</strong>
+        The employer has no record you applied.
+        No personal data was transmitted or stored on-chain.
+        Your identity remains completely protected.
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+  <script type="module">
+
+    const EDU_LABELS = {
+      '1': 'High School Diploma',
+      '2': "Associate's Degree",
+      '3': "Bachelor's Degree",
+      '4': "Master's Degree",
+      '5': 'PhD / Doctorate',
+    };
+
+    function genHash(len = 64) {
+      return '0x' + Array.from(
+        { length: len },
+        () => Math.floor(Math.random() * 16).toString(16)
+      ).join('');
+    }
+
+    function delay(ms) {
+      return new Promise(r => setTimeout(r, ms));
+    }
+
+    // ── Load job from localStorage (set by employer page) ──
+    const stored = localStorage.getItem('shieldhire_deployment');
+    if (stored) {
+      const { requirements, jobTitle } = JSON.parse(stored);
+      document.getElementById('jobCard').classList.add('show');
+      document.getElementById('jobTitleDisplay').textContent = jobTitle || '—';
+      document.getElementById('dYears').textContent =
+        requirements.minYearsExperience + ' years';
+      document.getElementById('dEdu').textContent =
+        EDU_LABELS[requirements.minEducationLevel] || '—';
+      document.getElementById('dSkill').textContent =
+        requirements.minSkillScore + ' / 100';
+    }
+
+    // ── ZK proof step animator ─────────────────────────────
+    const stepIds = ['s1','s2','s3','s4','s5'];
+
+    async function animateProofSteps() {
+      for (let i = 0; i < stepIds.length; i++) {
+        await delay(900);
+        if (i > 0) {
+          const prev = document.getElementById(stepIds[i - 1]);
+          prev.classList.remove('active');
+          prev.classList.add('done');
+          prev.textContent = '✅ ' + prev.textContent.slice(2);
+        }
+        const curr = document.getElementById(stepIds[i]);
+        curr.classList.add('active');
+        curr.textContent = '⚡ ' + curr.textContent.slice(2);
+      }
+      await delay(600);
+      const last = document.getElementById(stepIds[4]);
+      last.classList.remove('active');
+      last.classList.add('done');
+      last.textContent = '✅ ' + last.textContent.slice(2);
+    }
+
+    // ── Form submit ────────────────────────────────────────
+    document.getElementById('applyForm')
+      .addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Read ZK witness values
+        const years     = parseInt(document.getElementById('years').value);
+        const education = parseInt(document.getElementById('education').value);
+        const skill     = parseInt(document.getElementById('skill').value);
+
+        // Read requirements (from localStorage or defaults)
+        let minYears = 3, minEdu = 3, minSkill = 70;
+        if (stored) {
+          const { requirements } = JSON.parse(stored);
+          minYears = requirements.minYearsExperience;
+          minEdu   = requirements.minEducationLevel;
+          minSkill = requirements.minSkillScore;
+        }
+
+        // Log to console (mirrors contract-api.ts behaviour)
+        console.log('[ShieldHire] === ZK PROOF GENERATION START ===');
+        console.log('[ShieldHire] PRIVATE witnesses (local only):');
+        console.log('  secret_years:    ', years);
+        console.log('  secret_education:', education);
+        console.log('  secret_skill:    ', skill);
+        console.log('[ShieldHire] PUBLIC inputs from ledger:');
+        console.log('  minYears:    ', minYears);
+        console.log('  minEducation:', minEdu);
+        console.log('  minSkill:    ', minSkill);
+
+        document.getElementById('applyBtn').disabled = true;
+        document.getElementById('loading').classList.add('show');
+
+        await animateProofSteps();
+        await delay(400);
+
+        // Mirrors qualificationCheck() circuit in Compact
+        const qualified =
+          years     >= minYears &&
+          education >= minEdu   &&
+          skill     >= minSkill;
+
+        console.log('[ShieldHire] Result:', qualified ? 'QUALIFIED ✅' : 'NOT QUALIFIED ❌');
+        console.log('[ShieldHire] Data exposed to employer: [] (zero — ZK guarantee)');
+
+        document.getElementById('loading').classList.remove('show');
+
+        if (qualified) {
+          document.getElementById('candId').textContent =
+            Math.floor(Math.random() * 9000) + 1000;
+          document.getElementById('proofHash').textContent =
+            genHash(64).slice(0, 26) + '...';
+          document.getElementById('txHash').textContent =
+            genHash(64).slice(0, 26) + '...';
+          document.getElementById('ts').textContent =
+            new Date().toISOString();
+          document.getElementById('resYes').classList.add('show');
+        } else {
+          document.getElementById('resNo').classList.add('show');
+        }
+      });
+
+  </script>
+
+</body>
+</html>

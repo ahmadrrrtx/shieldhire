@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+        content="ShieldHire — Anonymous resume verification on Midnight Network. Prove your skills without revealing your identity." />
+  <title>ShieldHire — Anonymous Resume Verification on Midnight</title>
+  <style>
+
+    /* ── RESET & BASE ─────────────────────────────────── */
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    :root {
+      --purple:     #6c5ce7;
+      --purple-lt:  #a29bfe;
+      --teal:       #00cec9;
+      --teal-lt:    #81ecec;
+      --red:        #e74c3c;
+      --bg:         #0a0a0f;
+      --bg-card:    rgba(20,20,35,0.85);
+      --border:     rgba(108,92,231,0.18);
+      --text:       #e0e0e0;
+      --muted:      #808090;
+      --faint:      #404050;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAVBAR ──────────────────────────────────────── */
+    /* ── NAVBAR ──────────────────────────────────────── */
+.navbar {
+  position: sticky; top: 0; z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 40px;
+  background: rgba(10,10,20,0.95);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  gap: 20px;
+}
+.logo {
+  font-size: 22px; font-weight: 800;
+  background: linear-gradient(135deg,var(--purple),var(--purple-lt));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.logo span {
+  background: linear-gradient(135deg,var(--teal),var(--teal-lt));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.nav-links a {
+  color: var(--muted); text-decoration: none;
+  font-size: 14px; transition: color .25s;
+  white-space: nowrap;
+}
+.nav-links a:hover { color: var(--purple-lt); }
+.nav-badge {
+  padding: 5px 12px;
+  background: rgba(108,92,231,.12);
+  border: 1px solid rgba(108,92,231,.25);
+  border-radius: 20px;
+  font-size: 12px; color: var(--purple-lt);
+  white-space: nowrap;
+}
+
+    /* ── HERO ─────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 110px 20px 70px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-block;
+      padding: 8px 18px;
+      background: rgba(108,92,231,.12);
+      border: 1px solid rgba(108,92,231,.28);
+      border-radius: 20px;
+      font-size: 13px; color: var(--purple-lt);
+      margin-bottom: 32px;
+    }
+    .hero h1 {
+      font-size: clamp(36px,6vw,60px);
+      font-weight: 900; line-height: 1.08;
+      margin-bottom: 22px; letter-spacing: -.5px;
+    }
+    .hero h1 .grad {
+      background: linear-gradient(135deg,var(--purple),var(--purple-lt),var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 19px; color: var(--muted);
+      max-width: 580px; margin: 0 auto 42px;
+      line-height: 1.65;
+    }
+    .cta-row {
+      display: flex; gap: 14px;
+      justify-content: center; flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 15px 30px; border-radius: 12px;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; text-decoration: none;
+      border: none; transition: all .28s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg,var(--purple),var(--purple-lt));
+      color: #fff;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(108,92,231,.42);
+    }
+    .btn-ghost {
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .btn-ghost:hover {
+      background: rgba(255,255,255,.09);
+      transform: translateY(-2px);
+    }
+
+    /* ── STATS STRIP ──────────────────────────────────── */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+      gap: 20px;
+      max-width: 900px; margin: 0 auto 80px;
+      padding: 0 20px;
+    }
+    .stat-box {
+      background: var(--bg-card);
+      border: 1px solid rgba(231,76,60,.18);
+      border-radius: 14px; padding: 26px 20px;
+      text-align: center;
+    }
+    .stat-box .num {
+      font-size: 38px; font-weight: 900;
+      background: linear-gradient(135deg,var(--red),#fd79a8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-box .lbl {
+      font-size: 13px; color: var(--muted); margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    /* ── SECTION HEADINGS ─────────────────────────────── */
+    .section { padding: 80px 20px; }
+    .section-inner { max-width: 1060px; margin: 0 auto; }
+    .section-title {
+      text-align: center; font-size: clamp(26px,4vw,36px);
+      font-weight: 800; margin-bottom: 54px;
+    }
+    .section-sub {
+      text-align: center; color: var(--muted);
+      font-size: 17px; margin-top: -40px; margin-bottom: 50px;
+    }
+
+    /* ── HOW IT WORKS ─────────────────────────────────── */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap: 28px;
+    }
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px; padding: 34px;
+      transition: all .28s;
+    }
+    .step-card:hover {
+      border-color: rgba(108,92,231,.45);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(108,92,231,.12);
+    }
+    .step-num {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg,var(--purple),var(--purple-lt));
+      border-radius: 11px;
+      display: flex; align-items: center;
+      justify-content: center;
+      font-weight: 800; font-size: 16px;
+      margin-bottom: 18px;
+    }
+    .step-card h3 { font-size: 19px; margin-bottom: 10px; }
+    .step-card p { color: var(--muted); line-height: 1.6; font-size: 14px; }
+    .tag-pub {
+      display: inline-block;
+      margin-top: 12px; padding: 3px 10px;
+      background: rgba(108,92,231,.12);
+      border-radius: 6px; font-size: 11px;
+      color: var(--purple-lt);
+    }
+    .tag-prv {
+      display: inline-block;
+      margin-top: 12px; padding: 3px 10px;
+      background: rgba(0,206,201,.1);
+      border-radius: 6px; font-size: 11px;
+      color: var(--teal);
+    }
+
+    /* ── COMPARISON ───────────────────────────────────── */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px; max-width: 820px; margin: 0 auto;
+    }
+    .compare-card {
+      border-radius: 18px; padding: 32px;
+    }
+    .compare-card.bad {
+      background: rgba(231,76,60,.08);
+      border: 1px solid rgba(231,76,60,.28);
+    }
+    .compare-card.good {
+      background: rgba(108,92,231,.08);
+      border: 1px solid rgba(108,92,231,.28);
+    }
+    .compare-card h3 { font-size: 17px; margin-bottom: 18px; }
+    .compare-card ul { list-style: none; }
+    .compare-card ul li {
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      color: var(--muted); font-size: 14px;
+    }
+    .compare-card ul li:last-child { border-bottom: none; }
+    .compare-card.bad  li::before { content: "✗  "; color: var(--red); }
+    .compare-card.good li::before { content: "✓  "; color: var(--teal); }
+
+    /* ── PORTAL CARDS ─────────────────────────────────── */
+    .portal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px; max-width: 680px; margin: 0 auto;
+    }
+    .portal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 44px 32px;
+      text-align: center; cursor: pointer;
+      text-decoration: none; color: var(--text);
+      transition: all .28s; display: block;
+    }
+    .portal-card:hover {
+      border-color: var(--purple);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(108,92,231,.2);
+    }
+    .portal-card .ico { font-size: 52px; margin-bottom: 18px; }
+    .portal-card h3 { font-size: 20px; margin-bottom: 8px; }
+    .portal-card p { color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+    /* ── TECH STACK ───────────────────────────────────── */
+    .tech-row {
+      display: flex; justify-content: center;
+      gap: 12px; flex-wrap: wrap; margin-top: 16px;
+    }
+    .tech-pill {
+      padding: 8px 16px;
+      background: rgba(108,92,231,.1);
+      border: 1px solid rgba(108,92,231,.22);
+      border-radius: 8px; font-size: 13px;
+      color: var(--purple-lt);
+    }
+
+    /* ── FOOTER ───────────────────────────────────────── */
+    .footer {
+      padding: 44px 20px; text-align: center;
+      border-top: 1px solid var(--border);
+      color: var(--faint); font-size: 13px;
+    }
+    .footer a { color: var(--purple); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ───────────────────────────────────── */
+    @media (max-width: 680px) {
+      .navbar { padding: 16px 20px; }
+      .nav-links { gap: 12px; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .portal-grid  { grid-template-columns: 1fr; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAVBAR ══════════════════════════════════════════ -->
+  <!-- ══ NAVBAR ══════════════════════════════════════════ -->
+<nav class="navbar">
+  <a href="index.html" class="logo">Shield<span>Hire</span></a>
+  <div class="nav-links">
+    <a href="#how">How It Works</a>
+    <a href="#compare">vs Traditional</a>
+    <a href="#demo">Try Demo</a>
+    <a href="analytics.html">📊 Ledger</a>
+    <span class="nav-badge">🌙 Midnight</span>
+  </div>
+</nav>
+  <!-- ══ HERO ════════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-badge">
+      🏆 MLH Midnight Hackathon 2025 — Best Use of Midnight Network
+    </div>
+    <h1>
+      Prove Your Skills.<br>
+      <span class="grad">Protect Your Identity.</span>
+    </h1>
+    <p>
+      The first anonymous resume verification platform.
+      Zero-knowledge proofs let candidates prove they qualify
+      without revealing who they are.
+      Fair hiring — mathematically guaranteed.
+    </p>
+    <div class="cta-row">
+      <a href="#demo" class="btn btn-primary">🚀 Try the Demo</a>
+      <a href="#how"  class="btn btn-ghost">Learn How It Works</a>
+    </div>
+  </section>
+
+  <!-- ══ STATS ════════════════════════════════════════════ -->
+  <div class="stats-strip">
+    <div class="stat-box">
+      <div class="num">50%</div>
+      <div class="lbl">More callbacks for "white-sounding" names on identical resumes</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">30%</div>
+      <div class="lbl">Fewer STEM interviews for women with identical qualifications</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">78%</div>
+      <div class="lbl">Of workers 40+ report experiencing age discrimination</div>
+    </div>
+    <div class="stat-box">
+      <div class="num">26%</div>
+      <div class="lbl">Fewer callbacks when disabilities are disclosed on applications</div>
+    </div>
+  </div>
+
+  <!-- ══ HOW IT WORKS ═════════════════════════════════════ -->
+  <section class="section" id="how">
+    <div class="section-inner">
+      <h2 class="section-title">How ShieldHire Works</h2>
+      <div class="steps-grid">
+
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Employer Posts Requirements</h3>
+          <p>
+            Sets minimum qualifications — years of experience,
+            education level, and skill score. The
+            <code>setRequirements()</code> transition writes
+            these to the <strong>public ledger</strong>.
+            Anyone can verify what the job requires.
+          </p>
+          <span class="tag-pub">🔗 Public Ledger</span>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Candidate Applies Anonymously</h3>
+          <p>
+            Submits qualifications as ZK <strong>witnesses</strong>
+            — private inputs that go into the circuit locally.
+            The <code>applyAnonymously()</code> transition accepts
+            <code>secret_years</code>, <code>secret_education</code>,
+            and <code>secret_skill</code>.
+            These values <strong>never leave the device</strong>.
+          </p>
+          <span class="tag-prv">🛡️ Shielded Ledger</span>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>ZK Proof Generated</h3>
+          <p>
+            The <code>qualificationCheck()</code> circuit runs
+            locally via the Midnight Proof Server.
+            It produces a <strong>ZK-SNARK proof</strong> that
+            the candidate meets requirements — without
+            revealing any witness values.
+            Only the proof + boolean result go on-chain.
+          </p>
+          <span class="tag-prv">🔐 Zero-Knowledge</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ COMPARISON ═══════════════════════════════════════ -->
+  <section class="section" id="compare"
+           style="background:rgba(108,92,231,.025);
+                  border-top:1px solid var(--border);
+                  border-bottom:1px solid var(--border);">
+    <div class="section-inner">
+      <h2 class="section-title">Traditional Hiring vs ShieldHire</h2>
+      <div class="compare-grid">
+        <div class="compare-card bad">
+          <h3>❌ Traditional Hiring</h3>
+          <ul>
+            <li>Full name triggers unconscious bias</li>
+            <li>Photo can reveal race and gender</li>
+            <li>Address reveals socioeconomic status</li>
+            <li>University name creates elitism</li>
+            <li>Graduation year reveals age</li>
+            <li>No proof the process was fair</li>
+            <li>Centralised — company controls data</li>
+          </ul>
+        </div>
+        <div class="compare-card good">
+          <h3>✅ ShieldHire on Midnight</h3>
+          <ul>
+            <li>Identity completely shielded</li>
+            <li>Only qualifications evaluated</li>
+            <li>ZK proof verifies requirements match</li>
+            <li>Immutable public audit trail</li>
+            <li>Candidate owns their data</li>
+            <li>Mathematical fairness guarantee</li>
+            <li>Decentralised — no central authority</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ DEMO ═════════════════════════════════════════════ -->
+  <section class="section" id="demo">
+    <div class="section-inner">
+      <h2 class="section-title">Try the Demo</h2>
+      <p class="section-sub">Choose your role to experience ShieldHire</p>
+      <div class="portal-grid">
+        <a href="employer.html" class="portal-card">
+          <div class="ico">🏢</div>
+          <h3>I'm an Employer</h3>
+          <p>Post a job with requirements and deploy to Midnight Network</p>
+        </a>
+        <a href="candidate.html" class="portal-card">
+          <div class="ico">👤</div>
+          <h3>I'm a Candidate</h3>
+          <p>Apply anonymously — your identity stays shielded by ZK proofs</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TECH STACK ════════════════════════════════════════ -->
+  <section class="section"
+           style="border-top:1px solid var(--border); padding: 50px 20px;">
+    <p style="text-align:center; color:var(--faint);
+              font-size:12px; letter-spacing:1px; margin-bottom:16px;">
+      BUILT WITH
+    </p>
+    <div class="tech-row">
+      <span class="tech-pill">🌙 Midnight Network</span>
+      <span class="tech-pill">🔐 Zero-Knowledge Proofs (ZK-SNARK)</span>
+      <span class="tech-pill">📝 Compact Language</span>
+      <span class="tech-pill">⚡ TypeScript</span>
+      <span class="tech-pill">🔗 Dual Ledger Architecture</span>
+      <span class="tech-pill">🛡️ Shielded Witnesses</span>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ════════════════════════════════════════════ -->
+  <footer class="footer">
+    <p>ShieldHire &copy; 2025 &mdash; Built by Ahmad for MLH Midnight Hackathon</p>
+    <p style="margin-top:10px;">
+      Powered by
+      <a href="https://midnight.network" target="_blank">Midnight Network</a>
+      &mdash; Data Protection Blockchain
+    </p>
+  </footer>
+
+</body>
+</html>

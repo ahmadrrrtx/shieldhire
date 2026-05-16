@@ -1,0 +1,143 @@
+// ═══════════════════════════════════════════════════════════
+//
+//  ShieldHire — Anonymous Resume Verification
+//  Built on Midnight Network for MLH Hackathon 2025
+//
+//  Architecture:
+//  - PUBLIC LEDGER  → Job requirements (everyone can see)
+//  - PRIVATE WITNESSES → Candidate data (never revealed)
+//  - ZK CIRCUIT    → Proves qualification without exposure
+//
+// ═══════════════════════════════════════════════════════════
+
+
+// ─── ZK CIRCUIT DEFINITION ─────────────────────────────────
+//
+// This is the core zero-knowledge function.
+//
+// HOW IT WORKS:
+// The "witness" keyword marks inputs as PRIVATE.
+// They are known only to the candidate's local machine.
+// They go INTO the cryptographic circuit but are NEVER
+// transmitted to the blockchain or revealed to anyone.
+//
+// The ONLY thing the blockchain records is the output:
+// true (qualified) or false (not qualified).
+//
+// This is what makes it zero-knowledge:
+// "I know values that satisfy these conditions"
+// without revealing what those values are.
+
+circuit qualificationCheck(
+  witness candidateYears:     Uint32,
+  witness candidateEducation: Uint32,
+  witness candidateSkill:     Uint32,
+  minYears:                   Uint32,
+  minEducation:               Uint32,
+  minSkill:                   Uint32
+): Boolean {
+  return candidateYears     >= minYears
+      && candidateEducation >= minEducation
+      && candidateSkill     >= minSkill;
+}
+
+
+// ─── PUBLIC LEDGER STATE ───────────────────────────────────
+//
+// Everything defined in "ledger {}" is stored on the
+// PUBLIC ledger — visible to everyone on the blockchain.
+//
+// This includes:
+// - Job requirements (set by employer)
+// - Application statistics (anonymous counts only)
+// - Whether the job is currently active
+
+ledger {
+  minYearsRequired:     Uint32;
+  minEducationRequired: Uint32;
+  minSkillRequired:     Uint32;
+  totalApplications:    Counter;
+  qualifiedCount:       Counter;
+  jobActive:            Boolean;
+}
+
+
+// ─── TRANSITION: SET REQUIREMENTS ──────────────────────────
+//
+// Called by the EMPLOYER to post a job.
+// All inputs are PUBLIC — they appear on-chain.
+// This is intentional: employers WANT candidates to
+// know the requirements.
+//
+// Education levels:
+// 1 = High School
+// 2 = Associate Degree
+// 3 = Bachelor Degree
+// 4 = Master Degree
+// 5 = PhD / Doctorate
+//
+// Skill score: 1–100 (self-assessed technical proficiency)
+
+export transition setRequirements(
+  minYears:     Uint32,
+  minEducation: Uint32,
+  minSkill:     Uint32
+): [] {
+  ledger.minYearsRequired     = minYears;
+  ledger.minEducationRequired = minEducation;
+  ledger.minSkillRequired     = minSkill;
+  ledger.jobActive            = true;
+}
+
+
+// ─── TRANSITION: APPLY ANONYMOUSLY ─────────────────────────
+//
+// Called by the CANDIDATE to apply for the job.
+//
+// CRITICAL — How privacy works here:
+//
+// The three "secret_" parameters are WITNESSES.
+// They match the "witness" inputs in qualificationCheck().
+// The Midnight runtime:
+//   1. Takes these values on the candidate's local machine
+//   2. Feeds them into the ZK circuit
+//   3. Generates a cryptographic proof
+//   4. Submits ONLY the proof + result to the blockchain
+//   5. The actual values (years, education, skill) are
+//      NEVER stored, NEVER transmitted, NEVER visible
+//
+// The employer sees:
+// "Candidate #[hash] result: true" — nothing else.
+
+export transition applyAnonymously(
+  secret_years:     Uint32,
+  secret_education: Uint32,
+  secret_skill:     Uint32
+): Boolean {
+
+  const qualified: Boolean = qualificationCheck(
+    secret_years,
+    secret_education,
+    secret_skill,
+    ledger.minYearsRequired,
+    ledger.minEducationRequired,
+    ledger.minSkillRequired
+  );
+
+  ledger.totalApplications.increment(1);
+
+  if (qualified) {
+    ledger.qualifiedCount.increment(1);
+  }
+
+  return qualified;
+}
+
+
+// ─── TRANSITION: CLOSE JOB ─────────────────────────────────
+//
+// Called by employer to stop accepting applications.
+
+export transition closeJob(): [] {
+  ledger.jobActive = false;
+}

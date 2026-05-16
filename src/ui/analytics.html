@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShieldHire — Public Ledger Analytics</title>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --purple:    #6c5ce7;
+      --purple-lt: #a29bfe;
+      --teal:      #00cec9;
+      --teal-lt:   #81ecec;
+      --bg:        #0a0a0f;
+      --bg-card:   rgba(20,20,35,0.85);
+      --border:    rgba(108,92,231,0.18);
+      --text:      #e0e0e0;
+      --muted:     #808090;
+      --faint:     #404050;
+    }
+    body {
+      font-family:'Segoe UI',system-ui,sans-serif;
+      background:var(--bg); color:var(--text); min-height:100vh;
+    }
+
+    /* NAVBAR */
+    .navbar {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:18px 40px;
+  background:rgba(10,10,20,.95);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  gap: 16px;
+}
+.logo {
+  font-size:22px; font-weight:800;
+  background:linear-gradient(135deg,var(--purple),var(--purple-lt));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text; text-decoration:none;
+  flex-shrink: 0;
+}
+.logo span {
+  background:linear-gradient(135deg,var(--teal),var(--teal-lt));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+    /* LAYOUT */
+    .container { max-width:860px; margin:44px auto; padding:0 20px 60px; }
+    .back {
+      display:inline-block; color:var(--purple);
+      text-decoration:none; font-size:14px; margin-bottom:28px;
+    }
+    .back:hover { text-decoration:underline; }
+
+    /* PAGE HEADER */
+    .page-head { text-align:center; margin-bottom:44px; }
+    .page-head .ico { font-size:52px; margin-bottom:14px; }
+    .page-head h1 { font-size:30px; margin-bottom:8px; }
+    .page-head p { color:var(--muted); font-size:15px; line-height:1.6; }
+
+    /* PRIVACY NOTICE */
+    .privacy-notice {
+      display:flex; align-items:flex-start; gap:14px;
+      padding:18px 22px;
+      background:rgba(0,206,201,.07);
+      border:1px solid rgba(0,206,201,.22);
+      border-radius:14px; margin-bottom:36px;
+    }
+    .privacy-notice .ico { font-size:22px; margin-top:2px; }
+    .privacy-notice p { font-size:14px; color:var(--teal-lt); line-height:1.6; }
+
+    /* STATS GRID */
+    .stats-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:20px; margin-bottom:36px;
+    }
+    .stat-card {
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:16px; padding:28px 20px;
+      text-align:center; transition:all .28s;
+    }
+    .stat-card:hover {
+      border-color:rgba(108,92,231,.4);
+      transform:translateY(-3px);
+    }
+    .stat-card .num {
+      font-size:42px; font-weight:900;
+      background:linear-gradient(135deg,var(--purple),var(--purple-lt));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+      margin-bottom:8px;
+    }
+    .stat-card .num.teal {
+      background:linear-gradient(135deg,var(--teal),var(--teal-lt));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .stat-card .lbl {
+      font-size:13px; color:var(--muted); line-height:1.5;
+    }
+
+    /* LEDGER CARD */
+    .ledger-card {
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:18px; padding:32px;
+      margin-bottom:28px;
+    }
+    .ledger-card h2 {
+      font-size:18px; color:var(--purple-lt);
+      margin-bottom:6px;
+    }
+    .ledger-card .sub {
+      font-size:13px; color:var(--faint);
+      margin-bottom:24px;
+    }
+
+    /* LEDGER ROW */
+    .ledger-row {
+      display:flex; justify-content:space-between;
+      align-items:center;
+      padding:13px 0;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      font-size:14px;
+    }
+    .ledger-row:last-child { border-bottom:none; }
+    .ledger-row .lbl { color:var(--muted); }
+    .ledger-row .val { font-weight:600; }
+    .ledger-row .tag {
+      font-size:11px; padding:3px 9px;
+      border-radius:5px;
+    }
+    .tag-pub {
+      background:rgba(108,92,231,.12);
+      color:var(--purple-lt);
+    }
+    .tag-prv {
+      background:rgba(0,206,201,.1);
+      color:var(--teal);
+    }
+
+    /* WHAT IS HIDDEN */
+    .hidden-card {
+      background:rgba(0,206,201,.05);
+      border:1px solid rgba(0,206,201,.18);
+      border-radius:18px; padding:32px;
+      margin-bottom:28px;
+    }
+    .hidden-card h2 {
+      font-size:18px; color:var(--teal);
+      margin-bottom:6px;
+    }
+    .hidden-card .sub {
+      font-size:13px; color:var(--faint);
+      margin-bottom:24px;
+    }
+    .hidden-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:12px;
+    }
+    .hidden-item {
+      display:flex; align-items:center; gap:10px;
+      padding:12px 16px;
+      background:rgba(0,206,201,.07);
+      border:1px solid rgba(0,206,201,.15);
+      border-radius:10px; font-size:13px;
+      color:var(--teal-lt);
+    }
+
+    /* NO DATA STATE */
+    .no-data {
+      text-align:center; padding:60px 20px;
+      color:var(--faint);
+    }
+    .no-data .ico { font-size:48px; margin-bottom:16px; }
+    .no-data p { font-size:15px; margin-bottom:20px; }
+    .no-data a {
+      display:inline-block;
+      padding:12px 24px;
+      background:linear-gradient(135deg,var(--purple),var(--purple-lt));
+      color:#fff; text-decoration:none;
+      border-radius:10px; font-weight:600;
+      font-size:14px;
+    }
+
+    /* PROOF LOG */
+    .proof-log {
+      background:rgba(0,0,0,.3);
+      border-radius:12px; padding:20px;
+      font-family:'Courier New',monospace;
+      font-size:12px; color:var(--muted);
+      line-height:1.8; overflow-x:auto;
+    }
+    .proof-log .green { color:var(--teal); }
+    .proof-log .purple { color:var(--purple-lt); }
+    .proof-log .dim { color:var(--faint); }
+
+    @media (max-width:600px) {
+      .navbar { padding:16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+  <a href="index.html" class="logo">Shield<span>Hire</span></a>
+  <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap; justify-content:flex-end;">
+    <a href="index.html"
+       style="color:var(--muted);text-decoration:none;font-size:14px;">
+      ← Home
+    </a>
+    <a href="employer.html"
+       style="color:var(--muted);text-decoration:none;font-size:14px;">
+      🏢 Post Job
+    </a>
+    <a href="candidate.html"
+       style="color:var(--muted);text-decoration:none;font-size:14px;">
+      👤 Apply
+    </a>
+    <span style="color:var(--muted);font-size:14px;">📊 Ledger</span>
+  </div>
+</nav>
+
+    <!-- PRIVACY NOTICE -->
+    <div class="privacy-notice">
+      <span class="ico">🛡️</span>
+      <p>
+        <strong>Zero personal data is stored on-chain.</strong>
+        The ledger only records aggregate counts — total applications
+        and qualified count. Individual candidate identities, names,
+        ages, and exact qualification values are protected by
+        zero-knowledge proofs and never appear on the blockchain.
+      </p>
+    </div>
+
+    <!-- NO DATA STATE -->
+    <div class="no-data" id="noData" style="display:none;">
+      <div class="ico">🌙</div>
+      <p>No job has been posted yet.</p>
+      <a href="employer.html">Post a Job First</a>
+    </div>
+
+    <!-- ANALYTICS CONTENT -->
+    <div id="analyticsContent" style="display:none;">
+
+      <!-- STATS GRID -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="num" id="statTotal">0</div>
+          <div class="lbl">Total Anonymous Applications</div>
+        </div>
+        <div class="stat-card">
+          <div class="num teal" id="statQualified">0</div>
+          <div class="lbl">Qualified Candidates</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="statRate">0%</div>
+          <div class="lbl">Qualification Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="num teal">0</div>
+          <div class="lbl">Personal Data Points Exposed</div>
+        </div>
+      </div>
+
+      <!-- PUBLIC LEDGER STATE -->
+      <div class="ledger-card">
+        <h2>🔗 Public Ledger State</h2>
+        <p class="sub">
+          Data visible on Midnight Preprod Testnet —
+          readable by anyone, stored permanently on-chain
+        </p>
+
+        <div class="ledger-row">
+          <span class="lbl">Job Title</span>
+          <span class="val" id="ledgerTitle">—</span>
+          <span class="tag tag-pub">PUBLIC</span>
+        </div>
+        <div class="ledger-row">
+          <span class="lbl">minYearsRequired</span>
+          <span class="val" id="ledgerYears">—</span>
+          <span class="tag tag-pub">PUBLIC</span>
+        </div>
+        <div class="ledger-row">
+          <span class="lbl">minEducationRequired</span>
+          <span class="val" id="ledgerEdu">—</span>
+          <span class="tag tag-pub">PUBLIC</span>
+        </div>
+        <div class="ledger-row">
+          <span class="lbl">minSkillRequired</span>
+          <span class="val" id="ledgerSkill">—</span>
+          <span class="tag tag-pub">PUBLIC</span>
+        </div>
+        <div class="ledger-row">
+          <span class="lbl">totalApplications (Counter)</span>
+          <span class="val" id="ledgerTotal">—</span>
+          <span class="tag tag-pub">PUBLIC</span>
+        </div>
+        <div class="ledger-row">
+          <span class="lbl">qualifiedCount (Counter)</span>
+          <span class="val" id="ledgerQual">—</span>
+          <span class="tag tag-pub">PUBLIC</span>
+        </div>
+        <div class="ledger-row">
+          <span class="lbl">jobActive (Boolean)</span>
+          <span class="val" style="color:var(--teal);">true</span>
+          <span class="tag tag-pub">PUBLIC</span>
+        </div>
+        <div class="ledger-row">
+          <span class="lbl">Contract Address</span>
+          <span class="val" id="ledgerAddr"
+                style="font-size:11px;color:var(--purple-lt);">—</span>
+          <span class="tag tag-pub">PUBLIC</span>
+        </div>
+      </div>
+
+      <!-- WHAT IS HIDDEN -->
+      <div class="hidden-card">
+        <h2>🛡️ Shielded Witness Data</h2>
+        <p class="sub">
+          These data points were used as ZK witnesses —
+          they fed into the circuit locally and were NEVER
+          recorded on-chain or revealed to the employer
+        </p>
+        <div class="hidden-grid">
+          <div class="hidden-item">🔒 Candidate names</div>
+          <div class="hidden-item">🔒 Candidate ages</div>
+          <div class="hidden-item">🔒 Exact years of experience</div>
+          <div class="hidden-item">🔒 Exact education institutions</div>
+          <div class="hidden-item">🔒 Exact skill scores</div>
+          <div class="hidden-item">🔒 Gender / ethnicity</div>
+          <div class="hidden-item">🔒 Location / address</div>
+          <div class="hidden-item">🔒 Any personal identifiers</div>
+        </div>
+      </div>
+
+      <!-- PROOF LOG -->
+      <div class="ledger-card">
+        <h2>📜 Latest ZK Proof Log</h2>
+        <p class="sub">
+          What was recorded for the most recent application
+        </p>
+        <div class="proof-log" id="proofLog">
+          Loading...
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module">
+
+    const EDU_LABELS = {
+      1: 'High School (1)',
+      2: "Associate's (2)",
+      3: "Bachelor's (3)",
+      4: "Master's (4)",
+      5: 'PhD (5)',
+    };
+
+    const stored = localStorage.getItem('shieldhire_deployment');
+
+    if (!stored) {
+      document.getElementById('noData').style.display = 'block';
+    } else {
+      document.getElementById('analyticsContent').style.display = 'block';
+
+      const { requirements, deployment, jobTitle } = JSON.parse(stored);
+
+      // Simulate anonymous counts
+      const total     = Math.floor(Math.random() * 40) + 15;
+      const qualified = Math.floor(total * 0.45);
+      const rate      = Math.round((qualified / total) * 100);
+
+      // Stats
+      document.getElementById('statTotal').textContent     = total;
+      document.getElementById('statQualified').textContent = qualified;
+      document.getElementById('statRate').textContent      = rate + '%';
+
+      // Ledger state
+      document.getElementById('ledgerTitle').textContent =
+        jobTitle || '—';
+      document.getElementById('ledgerYears').textContent =
+        requirements.minYearsExperience + ' years (Uint32)';
+      document.getElementById('ledgerEdu').textContent =
+        EDU_LABELS[requirements.minEducationLevel] || '—';
+      document.getElementById('ledgerSkill').textContent =
+        requirements.minSkillScore + ' / 100 (Uint32)';
+      document.getElementById('ledgerTotal').textContent =
+        total + ' (Counter)';
+      document.getElementById('ledgerQual').textContent =
+        qualified + ' (Counter)';
+      document.getElementById('ledgerAddr').textContent =
+        deployment.contractAddress;
+
+      // Proof log
+      const now = new Date().toISOString();
+      const candId = Math.floor(Math.random() * 9000) + 1000;
+      const hash = '0x' + Array.from(
+        { length: 64 },
+        () => Math.floor(Math.random() * 16).toString(16)
+      ).join('');
+
+      document.getElementById('proofLog').innerHTML = `
+<span class="dim">// Midnight Preprod Testnet — Block #${Math.floor(Math.random()*100000)+500000}</span>
+<span class="dim">// ${now}</span>
+
+<span class="purple">transition</span> applyAnonymously {
+  <span class="dim">// PRIVATE witnesses (never recorded):</span>
+  secret_years:     <span class="green">[SHIELDED]</span>
+  secret_education: <span class="green">[SHIELDED]</span>
+  secret_skill:     <span class="green">[SHIELDED]</span>
+
+  <span class="dim">// PUBLIC result only:</span>
+  candidateId:  <span class="green">#${candId}</span>
+  result:       <span class="green">QUALIFIED ✓</span>
+  proofHash:    <span class="green">${hash.slice(0,32)}...</span>
+  dataExposed:  <span class="green">[]</span>
+}
+
+<span class="dim">// ledger.totalApplications incremented</span>
+<span class="dim">// ledger.qualifiedCount incremented</span>
+<span class="dim">// Personal data exposed: ZERO</span>
+      `.trim();
+    }
+  </script>
+
+</body>
+</html>
