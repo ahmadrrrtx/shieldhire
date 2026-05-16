@@ -3,8 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description"
-        content="ShieldHire — Anonymous resume verification on Midnight Network. Prove your skills without revealing your identity." />
+  <meta name="description" content="ShieldHire — Anonymous resume verification on Midnight Network. Prove your skills without revealing your identity.">
+
+  <meta property="og:title" content="ShieldHire — Anonymous Resume Verification">
+  <meta property="og:description" content="Prove your skills without revealing your identity. Built on Midnight Network with zero-knowledge proofs.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#6c5ce7">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🛡️</text></svg>">
+
+  <link rel="stylesheet" href="enhance.css">
+
   <title>ShieldHire — Anonymous Resume Verification on Midnight</title>
   <style>
 
@@ -308,6 +318,8 @@
 
   </style>
 </head>
+<!-- ── ENHANCEMENT SCRIPT ─────────────────────────────── -->
+<script src="enhance.js"></script>
 <body>
 
   <!-- ══ NAVBAR ══════════════════════════════════════════ -->
@@ -325,8 +337,8 @@
   <!-- ══ HERO ════════════════════════════════════════════ -->
   <section class="hero">
     <div class="hero-badge">
-      🏆 MLH Midnight Hackathon 2025 — Best Use of Midnight Network
-    </div>
+  🏆 Midnight Hackathon 2026 — Best Use of Midnight Network
+</div>
     <h1>
       Prove Your Skills.<br>
       <span class="grad">Protect Your Identity.</span>
@@ -379,7 +391,7 @@
             these to the <strong>public ledger</strong>.
             Anyone can verify what the job requires.
           </p>
-          <span class="tag-pub">🔗 Public Ledger</span>
+          <span class="tag-pub" data-tooltip="On-chain data visible to everyone">🔗 Public Ledger</span>
         </div>
 
         <div class="step-card">
@@ -393,7 +405,7 @@
             and <code>secret_skill</code>.
             These values <strong>never leave the device</strong>.
           </p>
-          <span class="tag-prv">🛡️ Shielded Ledger</span>
+          <span class="tag-prv" data-tooltip="Private data protected by ZK cryptography">🛡️ Shielded Ledger</span>
         </div>
 
         <div class="step-card">
@@ -407,13 +419,77 @@
             revealing any witness values.
             Only the proof + boolean result go on-chain.
           </p>
-          <span class="tag-prv">🔐 Zero-Knowledge</span>
+          <span class="tag-prv" data-tooltip="Mathematical proof without revealing data">🔐 Zero-Knowledge</span>
         </div>
 
       </div>
     </div>
   </section>
+<!-- ══ PIPELINE STATUS ══════════════════════════════════ -->
+<section class="pipeline-section">
+  <h2 class="pipeline-title">The ZK Pipeline</h2>
+  <p class="pipeline-sub">
+    Every application flows through these 5 stages on Midnight
+  </p>
 
+  <div class="pipeline-wrap">
+    <svg class="pipeline-svg" viewBox="0 0 1000 220" preserveAspectRatio="xMidYMid meet">
+
+      <defs>
+        <linearGradient id="pipelineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#6c5ce7" />
+          <stop offset="50%"  stop-color="#a29bfe" />
+          <stop offset="100%" stop-color="#67e8f9" />
+        </linearGradient>
+      </defs>
+
+      <!-- The wavy path connecting all nodes -->
+      <path class="pipeline-path"
+            d="M 80,140 Q 200,40 320,90 T 560,130 T 800,80 Q 880,60 920,100" />
+
+      <!-- Node 1: Deploy -->
+      <g class="pipeline-node">
+        <circle class="node-circle purple" cx="80" cy="140" r="22" />
+        <text class="node-number" x="80" y="140">1</text>
+        <text class="node-label"  x="80" y="185">Deploy</text>
+        <text class="node-sublabel" x="80" y="202">setRequirements()</text>
+      </g>
+
+      <!-- Node 2: Witness -->
+      <g class="pipeline-node">
+        <circle class="node-circle" cx="290" cy="65" r="22" />
+        <text class="node-number" x="290" y="65">2</text>
+        <text class="node-label"  x="290" y="30">Witness</text>
+        <text class="node-sublabel" x="290" y="14">secret_* inputs</text>
+      </g>
+
+      <!-- Node 3: Circuit -->
+      <g class="pipeline-node">
+        <circle class="node-circle purple" cx="500" cy="130" r="22" />
+        <text class="node-number" x="500" y="130">3</text>
+        <text class="node-label"  x="500" y="175">Circuit</text>
+        <text class="node-sublabel" x="500" y="192">qualificationCheck()</text>
+      </g>
+
+      <!-- Node 4: Proof -->
+      <g class="pipeline-node">
+        <circle class="node-circle" cx="720" cy="80" r="22" />
+        <text class="node-number" x="720" y="80">4</text>
+        <text class="node-label"  x="720" y="45">ZK Proof</text>
+        <text class="node-sublabel" x="720" y="29">ZK-SNARK generated</text>
+      </g>
+
+      <!-- Node 5: On-Chain -->
+      <g class="pipeline-node">
+        <circle class="node-circle purple" cx="920" cy="100" r="22" />
+        <text class="node-number" x="920" y="100">5</text>
+        <text class="node-label"  x="920" y="145">On-Chain</text>
+        <text class="node-sublabel" x="920" y="162">Result recorded</text>
+      </g>
+
+    </svg>
+  </div>
+</section>
   <!-- ══ COMPARISON ═══════════════════════════════════════ -->
   <section class="section" id="compare"
            style="background:rgba(108,92,231,.025);
@@ -489,13 +565,13 @@
 
   <!-- ══ FOOTER ════════════════════════════════════════════ -->
   <footer class="footer">
-    <p>ShieldHire &copy; 2025 &mdash; Built by Ahmad for MLH Midnight Hackathon</p>
+    <p>ShieldHire &copy; 2026 &mdash; Built by Ahmad & Diya for Midnight Hackathon  ©️ 2026 ShieldHire</p>
     <p style="margin-top:10px;">
       Powered by
       <a href="https://midnight.network" target="_blank">Midnight Network</a>
       &mdash; Data Protection Blockchain
     </p>
   </footer>
-
+  <script src="enhance.js"></script>
 </body>
 </html>
