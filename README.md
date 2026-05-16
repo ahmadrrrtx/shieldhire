@@ -171,16 +171,12 @@ architecture**:
 ---
 
 ## Team
-Team
 
-Member            Role                                Contact                             Github Handels
-─────             ────                                ───────                             ______________                             
-Ahmad             Lead Builder, Smart Contract        ahmadrrrtx333@gmail.com            https://github.com/ahmadrrrtx/
-                  Developer, Product Strategist
+| Member | Role | Contact | GitHub |
+|---|---|---|---|
+| **Ahmad** | Lead Builder, Smart Contract Developer, Product Strategist | ahmadrrrtx333@gmail.com | [@ahmadrrrtx](https://github.com/ahmadrrrtx) |
+| **Diya Majee** | Co-Builder, Research Lead, UI/UX Designer | diyamajee0391@gmail.com | [@diyamajee-spec](https://github.com/diyamajee-spec) |
 
-Diya Majee        Co-Builder, Research Lead,          diyamajee0391@gmail.com             https://github.com/diyamajee-spec/
-                 , UI/UX Designer
--------
 ## License
 
 MIT — Built with ❤️ for MLH Midnight Hackathon 2025
