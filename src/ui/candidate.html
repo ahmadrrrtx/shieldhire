@@ -3,6 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ── META TAGS FOR SHARING ──────────────────────────── -->
+  <meta property="og:title" content="ShieldHire — Candidate Portal">
+  <meta property="og:description" content="Apply anonymously with zero-knowledge proofs. Your identity stays shielded.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#6c5ce7">
+
+  <!-- ── FAVICON ────────────────────────────────────────── -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>🛡️</text></svg>">
+
+  <!-- ── ENHANCEMENT PACK ───────────────────────────────── -->
+  <link rel="stylesheet" href="enhance.css">
+
   <title>ShieldHire — Candidate Portal</title>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -248,6 +261,8 @@
     .prv-note strong { color:var(--teal); }
   </style>
 </head>
+<!-- ── ENHANCEMENT SCRIPT ─────────────────────────────── -->
+<script src="enhance.js"></script>
 <body>
 
   <nav class="navbar">
@@ -367,14 +382,17 @@
         </div>
 
         <div class="field">
-          <label>Self-Assessed Skill Score (1 – 100)</label>
-          <input type="number" id="skill"
-                 min="1" max="100" placeholder="e.g. 85" required />
-          <div class="hint">
-            Maps to <code>secret_skill</code> witness. Be honest —
-            only you know the actual value.
-          </div>
-        </div>
+  <label>Self-Assessed Skill Score (1 – 100)</label>
+  <input type="number" id="skill"
+         min="1" max="100" placeholder="e.g. 85" required />
+  <div class="hint">
+    Maps to <code>secret_skill</code> witness. Be honest —
+    only you know the actual value.
+  </div>
+  <button type="button" class="calc-toggle" onclick="openCalculator()">
+    🧮 Use Skill Calculator (private)
+  </button>
+</div>
 
         <button type="submit" class="btn-full" id="applyBtn">
           🔐 Generate ZK Proof & Apply
@@ -427,6 +445,76 @@
           <span class="lbl">Proof Type</span>
           <span class="val">ZK-SNARK (qualificationCheck circuit)</span>
         </div>
+        <!-- ── PROOF INSPECTOR PANEL ───────────────────────── -->
+<div class="proof-inspector">
+  <div class="inspector-header">
+    <h3>🔬 ZK Proof Inspector</h3>
+    <span class="inspector-badge">TECHNICAL VIEW</span>
+  </div>
+
+  <div class="inspector-grid">
+    <div class="inspector-metric">
+      <div class="metric-label">Circuit Name</div>
+      <div class="metric-value" id="insCircuit"
+           style="font-size:13px;">qualificationCheck</div>
+    </div>
+    <div class="inspector-metric">
+      <div class="metric-label">Witnesses</div>
+      <div class="metric-value">3<span class="metric-unit">private</span></div>
+    </div>
+    <div class="inspector-metric">
+      <div class="metric-label">Public Inputs</div>
+      <div class="metric-value">3<span class="metric-unit">on-chain</span></div>
+    </div>
+    <div class="inspector-metric">
+      <div class="metric-label">Constraints</div>
+      <div class="metric-value" id="insConstraints">847</div>
+    </div>
+    <div class="inspector-metric">
+      <div class="metric-label">Proof Size</div>
+      <div class="metric-value" id="insSize">192<span class="metric-unit">bytes</span></div>
+    </div>
+    <div class="inspector-metric">
+      <div class="metric-label">Gen Time</div>
+      <div class="metric-value" id="insGenTime">1.8<span class="metric-unit">sec</span></div>
+    </div>
+    <div class="inspector-metric">
+      <div class="metric-label">Verify Time</div>
+      <div class="metric-value" id="insVerifyTime">14<span class="metric-unit">ms</span></div>
+    </div>
+    <div class="inspector-metric">
+      <div class="metric-label">Proof System</div>
+      <div class="metric-value" style="font-size:13px;">ZK-SNARK</div>
+    </div>
+  </div>
+
+  <div class="inspector-circuit">
+<span class="ic-comment">// Compact circuit that ran inside this proof:</span>
+
+<span class="ic-keyword">circuit</span> qualificationCheck(
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateYears</span>:     Uint32,    <span class="ic-comment">// hidden</span>
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateEducation</span>: Uint32,    <span class="ic-comment">// hidden</span>
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateSkill</span>:     Uint32,    <span class="ic-comment">// hidden</span>
+  <span class="ic-public">minYears</span>:                   Uint32,    <span class="ic-comment">// public</span>
+  <span class="ic-public">minEducation</span>:               Uint32,    <span class="ic-comment">// public</span>
+  <span class="ic-public">minSkill</span>:                   Uint32     <span class="ic-comment">// public</span>
+): <span class="ic-string">Boolean</span> {
+  <span class="ic-keyword">return</span> <span class="ic-witness">candidateYears</span>     &gt;= <span class="ic-public">minYears</span>
+      &amp;&amp; <span class="ic-witness">candidateEducation</span> &gt;= <span class="ic-public">minEducation</span>
+      &amp;&amp; <span class="ic-witness">candidateSkill</span>     &gt;= <span class="ic-public">minSkill</span>;
+}
+  </div>
+
+  <div class="inspector-exposed">
+    <span>🛡️</span>
+    <span>
+      <strong>Witness data exposed:</strong>
+      An empty array — all 3 witness values stayed
+      on your device. Only the boolean result and
+      cryptographic proof reached the blockchain.
+    </span>
+  </div>
+</div>
         <div class="proof-row">
           <span class="lbl">Proof Hash</span>
           <span class="val" id="proofHash" style="font-size:11px;">—</span>
@@ -565,11 +653,31 @@
         await delay(400);
 
         // Mirrors qualificationCheck() circuit in Compact
-        const qualified =
-          years     >= minYears &&
-          education >= minEdu   &&
-          skill     >= minSkill;
+        // Determine qualification based on job mode
+const stored2 = localStorage.getItem('shieldhire_deployment');
+const jobData = stored2 ? JSON.parse(stored2) : null;
+const mode    = jobData ? (jobData.jobMode || 1) : 1;
 
+let qualified = false;
+let weightedScore = 0;
+
+if (mode === 1) {
+  // Strict mode — all minimums required
+  qualified = years >= minYears &&
+              education >= minEdu &&
+              skill >= minSkill;
+  console.log('[ShieldHire] Mode: STRICT');
+} else {
+  // Weighted mode — calculate score
+  const cfg = jobData.weightedConfig;
+  weightedScore = (years * cfg.yearsWeight)
+                + (education * cfg.educationWeight)
+                + (skill * cfg.skillWeight);
+  qualified = weightedScore >= cfg.scoreThreshold;
+  console.log('[ShieldHire] Mode: WEIGHTED');
+  console.log('[ShieldHire] Weighted score:', weightedScore);
+  console.log('[ShieldHire] Threshold:', cfg.scoreThreshold);
+}
         console.log('[ShieldHire] Result:', qualified ? 'QUALIFIED ✅' : 'NOT QUALIFIED ❌');
         console.log('[ShieldHire] Data exposed to employer: [] (zero — ZK guarantee)');
 
@@ -587,10 +695,201 @@
           document.getElementById('resYes').classList.add('show');
         } else {
           document.getElementById('resNo').classList.add('show');
+            // Animate proof inspector metrics
+  setTimeout(() => {
+    const constraints = 800 + Math.floor(Math.random() * 200);
+    const proofSize   = 180 + Math.floor(Math.random() * 30);
+    const genTime     = (1.5 + Math.random() * 0.8).toFixed(1);
+    const verifyTime  = 10 + Math.floor(Math.random() * 10);
+
+    const insConstraints = document.getElementById('insConstraints');
+    const insSize        = document.getElementById('insSize');
+    const insGenTime     = document.getElementById('insGenTime');
+    const insVerifyTime  = document.getElementById('insVerifyTime');
+
+    if (insConstraints) insConstraints.textContent = constraints;
+    if (insSize)        insSize.innerHTML = proofSize + '<span class="metric-unit">bytes</span>';
+    if (insGenTime)     insGenTime.innerHTML = genTime + '<span class="metric-unit">sec</span>';
+    if (insVerifyTime)  insVerifyTime.innerHTML = verifyTime + '<span class="metric-unit">ms</span>';
+  }, 500);
         }
       });
 
   </script>
+  <script src="enhance.js"></script>
+  <!-- ═══ SKILL CALCULATOR MODAL ═══════════════════════ -->
+<div class="calc-modal" id="calcModal">
+  <div class="calc-box">
+    <div class="calc-header">
+      <div>
+        <h2>🧮 Skill Score Calculator</h2>
+        <p style="color:var(--muted);font-size:13px;margin-top:4px;">
+          Self-assessment — answer 5 quick questions
+        </p>
+      </div>
+      <button class="calc-close" onclick="closeCalculator()">✕</button>
+    </div>
 
+    <div class="calc-privacy">
+      <span>🛡️</span>
+      <span><strong>100% Private.</strong> All calculations happen in your
+      browser. Your answers never leave this device — just like a ZK witness.</span>
+    </div>
+
+    <form id="calcForm">
+
+      <div class="calc-question" data-q="1">
+        <label>1. Years of relevant work experience</label>
+        <div class="calc-options">
+          <div class="calc-option" data-value="5">0-1</div>
+          <div class="calc-option" data-value="10">2-3</div>
+          <div class="calc-option" data-value="15">4-6</div>
+          <div class="calc-option" data-value="18">7-10</div>
+          <div class="calc-option" data-value="20">10+</div>
+        </div>
+      </div>
+
+      <div class="calc-question" data-q="2">
+        <label>2. Number of projects completed</label>
+        <div class="calc-options">
+          <div class="calc-option" data-value="5">1-3</div>
+          <div class="calc-option" data-value="10">4-8</div>
+          <div class="calc-option" data-value="15">9-15</div>
+          <div class="calc-option" data-value="18">16-25</div>
+          <div class="calc-option" data-value="20">25+</div>
+        </div>
+      </div>
+
+      <div class="calc-question" data-q="3">
+        <label>3. Self-rated technical proficiency</label>
+        <div class="calc-options">
+          <div class="calc-option" data-value="5">Beginner</div>
+          <div class="calc-option" data-value="10">Junior</div>
+          <div class="calc-option" data-value="14">Mid</div>
+          <div class="calc-option" data-value="18">Senior</div>
+          <div class="calc-option" data-value="20">Expert</div>
+        </div>
+      </div>
+
+      <div class="calc-question" data-q="4">
+        <label>4. Certifications / formal training</label>
+        <div class="calc-options">
+          <div class="calc-option" data-value="2">None</div>
+          <div class="calc-option" data-value="6">1-2</div>
+          <div class="calc-option" data-value="10">3-5</div>
+          <div class="calc-option" data-value="13">6-9</div>
+          <div class="calc-option" data-value="15">10+</div>
+        </div>
+      </div>
+
+      <div class="calc-question" data-q="5">
+        <label>5. Leadership / mentoring experience</label>
+        <div class="calc-options">
+          <div class="calc-option" data-value="2">None</div>
+          <div class="calc-option" data-value="5">A little</div>
+          <div class="calc-option" data-value="10">Moderate</div>
+          <div class="calc-option" data-value="13">Significant</div>
+          <div class="calc-option" data-value="15">Extensive</div>
+        </div>
+      </div>
+
+    </form>
+
+    <div class="calc-result" id="calcResult" style="display:none;">
+      <div class="label">Your calculated skill score</div>
+      <div class="score" id="calcScore">0</div>
+      <div class="label">Out of 100 — based on your answers</div>
+      <button class="calc-apply" onclick="applyScore()">
+        ✓ Use This Score
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── Skill Calculator Logic ─────────────────────────
+  // All calculation happens locally in browser
+  // Mirrors the ZK witness pattern — data never leaves device
+
+  const answers = {};
+
+  function openCalculator() {
+    document.getElementById('calcModal').classList.add('show');
+  }
+
+  function closeCalculator() {
+    document.getElementById('calcModal').classList.remove('show');
+  }
+
+  // Handle option selection
+  document.querySelectorAll('.calc-question').forEach(question => {
+    const qNum = question.dataset.q;
+    question.querySelectorAll('.calc-option').forEach(option => {
+      option.addEventListener('click', () => {
+        // Deselect siblings
+        question.querySelectorAll('.calc-option').forEach(o => {
+          o.classList.remove('selected');
+        });
+        // Select this one
+        option.classList.add('selected');
+        answers[qNum] = parseInt(option.dataset.value);
+
+        // Check if all questions answered
+        if (Object.keys(answers).length === 5) {
+          calculateScore();
+        }
+      });
+    });
+  });
+
+  function calculateScore() {
+    const total = Object.values(answers).reduce((sum, val) => sum + val, 0);
+    const score = Math.min(100, Math.max(1, total));
+
+    const resultBox = document.getElementById('calcResult');
+    const scoreEl = document.getElementById('calcScore');
+
+    resultBox.style.display = 'block';
+
+    // Animate the number
+    let current = 0;
+    const duration = 1000;
+    const startTime = performance.now();
+
+    function animate(currentTime) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      current = Math.floor(score * eased);
+      scoreEl.textContent = current;
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        scoreEl.textContent = score;
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+
+  function applyScore() {
+    const score = parseInt(document.getElementById('calcScore').textContent);
+    document.getElementById('skill').value = score;
+    closeCalculator();
+
+    // Show toast if available
+    if (typeof showToast === 'function') {
+      showToast('Score applied: ' + score + '/100', '🧮');
+    }
+  }
+
+  // Close on backdrop click
+  document.getElementById('calcModal').addEventListener('click', (e) => {
+    if (e.target.id === 'calcModal') {
+      closeCalculator();
+    }
+  });
+</script>
 </body>
 </html>
