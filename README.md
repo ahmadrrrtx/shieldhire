@@ -2,7 +2,7 @@
 ## Anonymous Resume Verification on Midnight Network
 
 > **"Prove Your Skills. Protect Your Identity."**
-> Built for MLH Midnight Hackathon — May 2025
+> Built for MLH Midnight Hackathon — May 2026
 
 ---
 
