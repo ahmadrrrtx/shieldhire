@@ -733,6 +733,24 @@ if (mode === 1) {
 
         document.getElementById('loading').classList.remove('show');
 
+        // Animate proof inspector metrics unconditionally
+        setTimeout(() => {
+          const constraints = 800 + Math.floor(Math.random() * 200);
+          const proofSize   = 180 + Math.floor(Math.random() * 30);
+          const genTime     = (1.5 + Math.random() * 0.8).toFixed(1);
+          const verifyTime  = 10 + Math.floor(Math.random() * 10);
+
+          const insConstraints = document.getElementById('insConstraints');
+          const insSize        = document.getElementById('insSize');
+          const insGenTime     = document.getElementById('insGenTime');
+          const insVerifyTime  = document.getElementById('insVerifyTime');
+
+          if (insConstraints) insConstraints.textContent = constraints;
+          if (insSize)        insSize.innerHTML = proofSize + '<span class="metric-unit">bytes</span>';
+          if (insGenTime)     insGenTime.innerHTML = genTime + '<span class="metric-unit">sec</span>';
+          if (insVerifyTime)  insVerifyTime.innerHTML = verifyTime + '<span class="metric-unit">ms</span>';
+        }, 500);
+
         if (qualified) {
           document.getElementById('candId').textContent =
             Math.floor(Math.random() * 9000) + 1000;
@@ -745,23 +763,6 @@ if (mode === 1) {
           document.getElementById('resYes').classList.add('show');
         } else {
           document.getElementById('resNo').classList.add('show');
-            // Animate proof inspector metrics
-  setTimeout(() => {
-    const constraints = 800 + Math.floor(Math.random() * 200);
-    const proofSize   = 180 + Math.floor(Math.random() * 30);
-    const genTime     = (1.5 + Math.random() * 0.8).toFixed(1);
-    const verifyTime  = 10 + Math.floor(Math.random() * 10);
-
-    const insConstraints = document.getElementById('insConstraints');
-    const insSize        = document.getElementById('insSize');
-    const insGenTime     = document.getElementById('insGenTime');
-    const insVerifyTime  = document.getElementById('insVerifyTime');
-
-    if (insConstraints) insConstraints.textContent = constraints;
-    if (insSize)        insSize.innerHTML = proofSize + '<span class="metric-unit">bytes</span>';
-    if (insGenTime)     insGenTime.innerHTML = genTime + '<span class="metric-unit">sec</span>';
-    if (insVerifyTime)  insVerifyTime.innerHTML = verifyTime + '<span class="metric-unit">ms</span>';
-  }, 500);
         }
       });
 
