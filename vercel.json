@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/proof/:path*",
+      "destination": "https://lace-proof-pub.preprod.midnight.network/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
