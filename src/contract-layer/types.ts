@@ -91,9 +91,17 @@ export interface MidnightNetworkConfig {
 // Default preprod config (Midnight testnet)
 export const PREPROD_CONFIG: MidnightNetworkConfig = {
   networkId:      'preprod',
-  nodeUri:        'https://rpc.testnet-02.midnight.network',
+  nodeUri:        'https://rpc.preprod.midnight.network',
+  proofServerUri: 'https://lace-proof-pub.preprod.midnight.network',
+  indexerUri:     'https://indexer.preprod.midnight.network/api/v4/graphql',
+};
+
+// Local development config (Docker network)
+export const LOCAL_CONFIG: MidnightNetworkConfig = {
+  networkId:      'preprod', // The SDK expects 'preprod' or 'mainnet' currently
+  nodeUri:        'http://localhost:9933',
   proofServerUri: 'http://localhost:6300',
-  indexerUri:     'https://indexer.testnet-02.midnight.network/api/v1/graphql',
+  indexerUri:     'http://localhost:8088/api/v4/graphql',
 };
 
 // ═══════════════════════════════════════════════════════════

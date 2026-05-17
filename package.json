@@ -10,9 +10,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@midnight-ntwrk/midnight-js-types": "^0.1.0",
-    "@midnight-ntwrk/midnight-js-network-id": "^0.1.0",
-    "@midnight-ntwrk/compact-runtime": "^0.1.0"
+    "@midnight-ntwrk/compact-runtime": "^2.0.0",
+    "@midnight-ntwrk/midnight-js-types": "^2.0.0",
+    "@midnight-ntwrk/midnight-js-network-id": "^2.0.0",
+    "@midnight-ntwrk/midnight-js-contracts": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

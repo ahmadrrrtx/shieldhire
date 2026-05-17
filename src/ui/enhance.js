@@ -183,3 +183,51 @@ console.log(
   '%c🌙 Built for Midnight Hackathon 2026 — by Ahmad & Diya',
   'color: #808090; font-size: 12px;'
 );
+
+// ── ZK PIPELINE LIVE ANIMATION ────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const nodes = document.querySelectorAll('.pipeline-node circle');
+  const texts = document.querySelectorAll('.pipeline-node .node-number');
+  if (nodes.length === 0) return;
+
+  // Set default styles for smooth transitions
+  nodes.forEach(n => {
+    n.style.transition = 'all 0.4s ease-out';
+    n.style.strokeWidth = '3px';
+  });
+  texts.forEach(t => {
+    t.style.transition = 'all 0.4s ease-out';
+  });
+
+  let currentIndex = 0;
+  
+  function animatePipeline() {
+    // Reset all nodes to base inactive state
+    nodes.forEach((node, i) => {
+      node.style.fill = 'transparent';
+      node.style.stroke = 'rgba(108,92,231,0.4)';
+      node.style.filter = 'none';
+      if (texts[i]) texts[i].style.fill = '#808090'; // Muted
+    });
+
+    // Light up current node dynamically (Teal / Cyan glow)
+    const current = nodes[currentIndex];
+    current.style.fill = 'rgba(0, 206, 201, 0.15)';
+    current.style.stroke = '#00cec9'; 
+    current.style.filter = 'drop-shadow(0 0 10px rgba(0, 206, 201, 0.8))';
+    if (texts[currentIndex]) texts[currentIndex].style.fill = '#00cec9';
+
+    currentIndex++;
+    
+    // Sequence timing
+    if (currentIndex >= nodes.length) {
+      currentIndex = 0;
+      setTimeout(animatePipeline, 3000); // Wait 3s at the end before restarting the loop
+    } else {
+      setTimeout(animatePipeline, 900); // 0.9s per pipeline step
+    }
+  }
+
+  // Kickoff animation immediately
+  setTimeout(animatePipeline, 500);
+});
