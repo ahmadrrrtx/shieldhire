@@ -176,23 +176,27 @@ Real-time dashboard with:
 
 ## 📁 Project Structure
 
-```
+```text
 shieldhire/
 ├── contract/
 │   └── shieldhire.compact        # ZK smart contract (3 circuits, 5 transitions)
+├── docs/
+│   └── screenshots/              # Application showcase images
 ├── src/
 │   ├── contract-layer/
-│   │   ├── types.ts              # Compact type mirrors in TypeScript
-│   │   └── contract-api.ts       # Midnight SDK integration layer
+│   │   ├── types.ts              # Network configs and Type mirrors
+│   │   └── contract-api.ts       # Midnight SDK integration & fallback logic
+│   ├── generated/
+│   │   └── shieldhire/           # Auto-compiled Compact TS bindings & circuits
 │   └── ui/
-│       ├── index.html            # Landing page with pipeline & stats
-│       ├── employer.html         # Job posting portal (mode selection)
-│       ├── candidate.html        # Anonymous application + calculator + inspector
+│       ├── index.html            # Landing page with live ZK Pipeline animation
+│       ├── employer.html         # Job posting portal (strict/weighted modes)
+│       ├── candidate.html        # Anonymous application + ZK proof inspector
 │       ├── analytics.html        # Public ledger dashboard
-│       ├── enhance.css           # Global styling system
-│       └── enhance.js            # Animations and interactions
-├── DEPLOY.md                     # Detailed deployment guide
-├── package.json
+│       ├── enhance.css           # Vanilla CSS dark-mode design system
+│       └── enhance.js            # Frontend logic and DOM interactions
+├── vite.config.ts                # Vite bundler & Proof Server CORS proxy
+├── package.json                  # Dependencies (Midnight SDK v2.0.0)
 └── README.md
 ```
 
