@@ -236,10 +236,26 @@ export class ShieldHireContractAPI {
       console.warn(`[ShieldHire] SDK Proof bypassed (${error.message}). Simulating...`);
       await new Promise(r => setTimeout(r, 2500));
       
-      qualified =
-        witnesses.secret_years     >= requirements.minYearsExperience &&
-        witnesses.secret_education >= requirements.minEducationLevel  &&
-        witnesses.secret_skill     >= requirements.minSkillScore;
+      // Determine qualification logic dynamically based on jobMode
+      const storedDeployment = typeof localStorage !== 'undefined' ? localStorage.getItem('shieldhire_deployment') : null;
+      if (storedDeployment) {
+        const { jobMode, weightedConfig } = JSON.parse(storedDeployment);
+        if (jobMode === 2 && weightedConfig) {
+          const weightedScore = (witnesses.secret_years * weightedConfig.yearsWeight)
+                              + (witnesses.secret_education * weightedConfig.educationWeight)
+                              + (witnesses.secret_skill * weightedConfig.skillWeight);
+          qualified = weightedScore >= weightedConfig.scoreThreshold;
+          console.log(`[ShieldHire Simulation] Weighted score calculated: ${weightedScore} (Threshold: ${weightedConfig.scoreThreshold})`);
+        } else {
+          qualified = witnesses.secret_years     >= requirements.minYearsExperience &&
+                      witnesses.secret_education >= requirements.minEducationLevel  &&
+                      witnesses.secret_skill     >= requirements.minSkillScore;
+        }
+      } else {
+        qualified = witnesses.secret_years     >= requirements.minYearsExperience &&
+                    witnesses.secret_education >= requirements.minEducationLevel  &&
+                    witnesses.secret_skill     >= requirements.minSkillScore;
+      }
         
       const randHash = () => '0x' + Array.from({length: 64}, () => '0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
       proofHash = randHash();
