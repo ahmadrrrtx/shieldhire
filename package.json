@@ -10,8 +10,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@midnight-ntwrk/compact-runtime": "^2.0.0",
-    "@midnight-ntwrk/midnight-js-types": "^2.0.0",
+    "dependencies": {
+   "@midnight-ntwrk/compact-js": "^2.5.0",
+   "@midnight-ntwrk/compact-runtime": "^0.15.0"
     "@midnight-ntwrk/midnight-js-network-id": "^2.0.0",
     "@midnight-ntwrk/midnight-js-contracts": "^2.0.0"
   },
