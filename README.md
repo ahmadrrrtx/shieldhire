@@ -77,6 +77,7 @@ flowchart TB
         ZK_PROVE["⚡ ZK-SNARK Prover<br/>(Local Computation)"]
     end
 
+
     RESULT(("✅ Result<br/>Qualified / Not Qualified<br/>Data Exposed = 0"))
 
     E_UI --> LACE
