@@ -129,6 +129,13 @@ flowchart TB
 <br>
 
 <p align="center">
+  <img src="docs/screenshots/verified_receipt.png" width="800" alt="ZK Proof Verification Success (You're Qualified!)">
+  <br><em>Upon successful evaluation, the Candidate Portal presents a cryptographically verified 'You're Qualified!' status while keeping personal identity details fully shielded on-chain.</em>
+</p>
+
+<br>
+
+<p align="center">
   <img src="docs/screenshots/analytics.png" width="800" alt="ShieldHire Public Ledger Analytics">
   <br><em>The Public Ledger Analytics Dashboard showing ticking network latency, global stats, verified contract inspectors, and live block explorer transactions.</em>
 </p>
