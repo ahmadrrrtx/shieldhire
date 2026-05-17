@@ -304,15 +304,15 @@
     <div class="job-card" id="jobCard">
       <h2>📋 Applying for: <span id="jobTitleDisplay">—</span></h2>
       <div class="row">
-        <span class="lbl">Min. Experience Required</span>
+        <span class="lbl" id="lblYears">Min. Experience Required</span>
         <span class="val" id="dYears">—</span>
       </div>
       <div class="row">
-        <span class="lbl">Min. Education Required</span>
+        <span class="lbl" id="lblEdu">Min. Education Required</span>
         <span class="val" id="dEdu">—</span>
       </div>
       <div class="row">
-        <span class="lbl">Min. Skill Score Required</span>
+        <span class="lbl" id="lblSkill">Min. Skill Score Required</span>
         <span class="val" id="dSkill">—</span>
       </div>
     </div>
@@ -488,10 +488,10 @@
     </div>
   </div>
 
-  <div class="inspector-circuit">
+  <div class="inspector-circuit" id="circuitCode">
 <span class="ic-comment">// Compact circuit that ran inside this proof:</span>
 
-<span class="ic-keyword">circuit</span> qualificationCheck(
+<span class="ic-keyword">circuit</span> strictQualification(
   <span class="ic-keyword">witness</span> <span class="ic-witness">candidateYears</span>:     Uint32,    <span class="ic-comment">// hidden</span>
   <span class="ic-keyword">witness</span> <span class="ic-witness">candidateEducation</span>: Uint32,    <span class="ic-comment">// hidden</span>
   <span class="ic-keyword">witness</span> <span class="ic-witness">candidateSkill</span>:     Uint32,    <span class="ic-comment">// hidden</span>
@@ -581,16 +581,66 @@
 
     // ── Load job from localStorage (set by employer page) ──
     const stored = localStorage.getItem('shieldhire_deployment');
+    
+    // Weighted circuit snippet
+    const WEIGHTED_SNIPPET = `
+<span class="ic-comment">// Compact circuit that ran inside this proof:</span>
+
+<span class="ic-keyword">circuit</span> weightedQualification(
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateYears</span>:     Uint32,    <span class="ic-comment">// hidden</span>
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateEducation</span>: Uint32,    <span class="ic-comment">// hidden</span>
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateSkill</span>:     Uint32,    <span class="ic-comment">// hidden</span>
+  <span class="ic-public">yearsWeight</span>:                Uint32,    <span class="ic-comment">// public</span>
+  <span class="ic-public">educationWeight</span>:            Uint32,    <span class="ic-comment">// public</span>
+  <span class="ic-public">skillWeight</span>:                Uint32,    <span class="ic-comment">// public</span>
+  <span class="ic-public">threshold</span>:                  Uint32     <span class="ic-comment">// public</span>
+): <span class="ic-string">Boolean</span> {
+  <span class="ic-keyword">return</span> (<span class="ic-witness">candidateYears</span> * <span class="ic-public">yearsWeight</span>)
+       + (<span class="ic-witness">candidateEducation</span> * <span class="ic-public">educationWeight</span>)
+       + (<span class="ic-witness">candidateSkill</span> * <span class="ic-public">skillWeight</span>) &gt;= <span class="ic-public">threshold</span>;
+}`;
+
     if (stored) {
-      const { requirements, jobTitle } = JSON.parse(stored);
+      const { requirements, jobTitle, jobMode, weightedConfig } = JSON.parse(stored);
       document.getElementById('jobCard').classList.add('show');
       document.getElementById('jobTitleDisplay').textContent = jobTitle || '—';
-      document.getElementById('dYears').textContent =
-        requirements.minYearsExperience + ' years';
-      document.getElementById('dEdu').textContent =
-        EDU_LABELS[requirements.minEducationLevel] || '—';
-      document.getElementById('dSkill').textContent =
-        requirements.minSkillScore + ' / 100';
+
+      if (jobMode === 2 && weightedConfig) {
+        // Show weighted configuration
+        document.getElementById('lblYears').textContent = 'Experience Weight';
+        document.getElementById('lblEdu').textContent = 'Education Weight';
+        document.getElementById('lblSkill').textContent = 'Skill Score Weight';
+
+        document.getElementById('dYears').textContent  = `${weightedConfig.yearsWeight}× weight`;
+        document.getElementById('dEdu').textContent    = `${weightedConfig.educationWeight}× weight`;
+        document.getElementById('dSkill').textContent  = `${weightedConfig.skillWeight}× weight`;
+
+        const existingRow = document.getElementById('thresholdRow');
+        if (existingRow) existingRow.remove();
+
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.id = 'thresholdRow';
+        row.innerHTML = `<span class="lbl">Score Threshold</span>
+                         <span class="val">${weightedConfig.scoreThreshold} pts</span>`;
+        document.getElementById('jobCard').appendChild(row);
+
+        // Update ZK Proof Inspector values
+        document.getElementById('insCircuit').textContent = 'weightedQualification';
+        const codeBlock = document.getElementById('circuitCode');
+        if (codeBlock) codeBlock.innerHTML = WEIGHTED_SNIPPET;
+      } else {
+        document.getElementById('lblYears').textContent = 'Min. Experience Required';
+        document.getElementById('lblEdu').textContent = 'Min. Education Required';
+        document.getElementById('lblSkill').textContent = 'Min. Skill Score Required';
+
+        document.getElementById('dYears').textContent = requirements.minYearsExperience + ' years';
+        document.getElementById('dEdu').textContent = EDU_LABELS[requirements.minEducationLevel] || '—';
+        document.getElementById('dSkill').textContent = requirements.minSkillScore + ' / 100';
+
+        const existingRow = document.getElementById('thresholdRow');
+        if (existingRow) existingRow.remove();
+      }
     }
 
     // ── ZK proof step animator ─────────────────────────────
