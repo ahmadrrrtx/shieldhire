@@ -286,6 +286,69 @@
     .portal-card h3 { font-size: 20px; margin-bottom: 8px; }
     .portal-card p { color: var(--muted); font-size: 14px; line-height: 1.5; }
 
+    /* ── JOB BOARD ────────────────────────────────────── */
+    .job-board-title {
+      font-size: 24px; text-align: center; color: var(--purple-lt);
+      margin: 44px 0 24px; font-weight: 700;
+    }
+    .job-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px; max-width: 900px; margin: 0 auto;
+    }
+    .job-card-active {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 24px;
+      transition: all 0.28s; display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+      text-align: left;
+    }
+    .job-card-active::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+      background: var(--purple);
+    }
+    .job-card-active.weighted::before {
+      background: var(--teal);
+    }
+    .job-card-active:hover {
+      transform: translateY(-4px);
+      border-color: rgba(108,92,231,0.35);
+      box-shadow: 0 12px 30px rgba(108,92,231,0.1);
+    }
+    .job-card-active h4 { font-size: 17px; margin-bottom: 8px; color: var(--text); }
+    .job-card-active .addr {
+      font-family: monospace; font-size: 11px; color: var(--muted);
+      margin-bottom: 12px; cursor: pointer; transition: color 0.2s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .job-card-active .addr:hover { color: var(--purple-lt); }
+    .job-card-active .badges { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .job-badge-pill {
+      font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600;
+    }
+    .job-badge-pill.strict { background: rgba(108,92,231,0.12); color: var(--purple-lt); }
+    .job-badge-pill.weighted { background: rgba(0,206,201,0.1); color: var(--teal); }
+    .job-badge-pill.active { background: rgba(46,204,113,0.1); color: #2ecc71; }
+    .job-badge-pill.closed { background: rgba(231,76,60,0.1); color: var(--red); }
+    .job-requirements-summary {
+      font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; flex-grow: 1;
+    }
+    .job-card-actions { display: flex; gap: 10px; }
+    .btn-sm {
+      padding: 8px 14px; font-size: 12px; font-weight: 600; text-align: center;
+      text-decoration: none; border-radius: 8px; transition: all 0.2s; cursor: pointer;
+    }
+    .btn-sm-primary {
+      background: linear-gradient(135deg,var(--purple),var(--purple-lt)); color: #fff;
+      border: none;
+    }
+    .btn-sm-primary:hover { transform: translateY(-1px); }
+    .btn-sm-ghost {
+      background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-sm-ghost:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+
     /* ── TECH STACK ───────────────────────────────────── */
     .tech-row {
       display: flex; justify-content: center;
@@ -543,8 +606,101 @@
           <p>Apply anonymously — your identity stays shielded by ZK proofs</p>
         </a>
       </div>
+
+      <!-- INTERACTIVE JOB BOARD -->
+      <div class="job-board-title">💼 Active Job Postings on Midnight Network</div>
+      <div class="job-grid" id="homepageJobGrid">
+        <!-- Rendered dynamically -->
+        <div style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 40px;">
+          Loading Midnight Contract Registry...
+        </div>
+      </div>
     </div>
   </section>
+
+  <!-- Script to load jobs using our contractAPI -->
+  <script type="module">
+    import { contractAPI } from '../contract-layer/contract-api.ts';
+
+    const EDU_LABELS = {
+      1: 'High School Diploma',
+      2: "Associate's Degree",
+      3: "Bachelor's Degree",
+      4: "Master's Degree",
+      5: 'PhD / Doctorate',
+    };
+
+    function renderJobs() {
+      const grid = document.getElementById('homepageJobGrid');
+      if (!grid) return;
+
+      const jobs = contractAPI.getJobs();
+      if (!jobs || jobs.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 40px;">
+            <p style="font-size: 16px; margin-bottom: 12px;">No active job contracts found on the public ledger.</p>
+            <a href="employer.html" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;">Deploy First Job Contract</a>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = '';
+      jobs.forEach(job => {
+        const isWeighted = job.jobMode === 2;
+        const isActive = job.status === 'active';
+        const card = document.createElement('div');
+        card.className = `job-card-active ${isWeighted ? 'weighted' : ''}`;
+        
+        let reqHtml = '';
+        if (isWeighted && job.weightedConfig) {
+          reqHtml = `
+            <strong>Weighted Mode:</strong> Flexible scoring<br>
+            • Experience Weight: ${job.weightedConfig.yearsWeight}<br>
+            • Education Weight: ${job.weightedConfig.educationWeight}<br>
+            • Skill Weight: ${job.weightedConfig.skillWeight}<br>
+            • Score Threshold: <strong>${job.weightedConfig.scoreThreshold} pts</strong>
+          `;
+        } else {
+          reqHtml = `
+            <strong>Strict Mode:</strong> Hard minimums<br>
+            • Min Experience: ${job.requirements.minYearsExperience} years<br>
+            • Min Education: ${EDU_LABELS[job.requirements.minEducationLevel] || job.requirements.minEducationLevel}<br>
+            • Min Skill Score: ${job.requirements.minSkillScore}/100
+          `;
+        }
+
+        const shortAddr = job.id.slice(0, 10) + '...' + job.id.slice(-8);
+
+        card.innerHTML = `
+          <h4>${job.jobTitle}</h4>
+          <div class="addr" onclick="copyToClipboard('${job.id}', 'Contract address copied')" data-tooltip="Click to copy full address">
+            🔗 Contract: ${shortAddr}
+          </div>
+          <div class="badges">
+            <span class="job-badge-pill ${isWeighted ? 'weighted' : 'strict'}">
+              ${isWeighted ? '⚖️ WEIGHTED' : '🔒 STRICT'}
+            </span>
+            <span class="job-badge-pill ${isActive ? 'active' : 'closed'}">
+              ${isActive ? '🟢 ACTIVE ON-CHAIN' : '🔴 CLOSED'}
+            </span>
+          </div>
+          <div class="job-requirements-summary">
+            ${reqHtml}
+          </div>
+          <div class="job-card-actions">
+            ${isActive ? `<a href="candidate.html?jobId=${job.id}" class="btn-sm btn-sm-primary">Apply Anonymously</a>` : `<span style="font-size:12px;color:var(--red);align-self:center;margin-right:10px;">Applications Closed</span>`}
+            <a href="analytics.html?jobId=${job.id}" class="btn-sm btn-sm-ghost">Ledger Stats</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Run rendering
+    renderJobs();
+  </script>
+
 
   <!-- ══ TECH STACK ════════════════════════════════════════ -->
   <section class="section"

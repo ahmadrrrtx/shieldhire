@@ -152,3 +152,32 @@ export interface ProofMetadata {
   proofType:         'ZK-SNARK' | 'PLONK' | 'STARK';
   dataExposed:       string[];
 }
+
+// ─── REGISTRY & TRAIT PROOF TYPES ───────────────────────────
+
+export interface JobRegistryEntry {
+  id: string; // Contract address acts as ID
+  jobTitle: string;
+  jobMode: JobMode;
+  requirements: JobRequirements;
+  weightedConfig: WeightedJobRequirements | null;
+  deployment: DeploymentResult;
+  status: 'active' | 'closed';
+  counters: {
+    total: number;
+    qualified: number;
+    disclosures: number;
+  };
+}
+
+export interface TraitProofResult {
+  attribute: DisclosureAttribute;
+  threshold: number;
+  proven: boolean;
+  proofHash: string;
+  transactionHash: string;
+  timestamp: string;
+  networkId: string;
+  blockHeight: number;
+}
+

@@ -318,87 +318,177 @@
     </div>
 
     <!-- APPLICATION FORM -->
-    <div class="card">
-      <h2>
-        🔐 Your Qualifications
-        <span class="prv-tag">🛡️ ZK WITNESSES</span>
-      </h2>
-      <p class="sub">
-        These values are private ZK witnesses. They feed into the
-        local <code>qualificationCheck()</code> circuit and are
-        NEVER transmitted or stored on-chain.
-      </p>
-
-      <form id="applyForm">
-
-        <!-- Personal data — shielded -->
-        <div class="field">
-          <label>
-            Your Name
-            <span class="prv-tag">🔒 Never transmitted</span>
-          </label>
-          <input type="text" id="name" placeholder="e.g. Ahmad" required />
-          <div class="hint">
-            Used only for your local reference. Not part of the ZK proof.
-          </div>
-        </div>
-
-        <div class="field">
-          <label>
-            Your Age
-            <span class="prv-tag">🔒 Never transmitted</span>
-          </label>
-          <input type="number" id="age" placeholder="e.g. 25" required />
-          <div class="hint">
-            Shielded — the employer will never see this.
-          </div>
-        </div>
-
-        <div class="divider">ZK CIRCUIT INPUTS (secret_ witnesses)</div>
-
-        <div class="field">
-          <label>Years of Experience</label>
-          <input type="number" id="years"
-                 min="0" max="30" placeholder="e.g. 5" required />
-          <div class="hint">
-            Maps to <code>secret_years</code> witness in Compact contract.
-            Only pass/fail is revealed on-chain.
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Highest Education Level</label>
-          <select id="education" required>
-            <option value="">Select your education...</option>
-            <option value="1">1 — High School Diploma</option>
-            <option value="2">2 — Associate's Degree</option>
-            <option value="3">3 — Bachelor's Degree</option>
-            <option value="4">4 — Master's Degree</option>
-            <option value="5">5 — PhD / Doctorate</option>
-          </select>
-          <div class="hint">
-            Maps to <code>secret_education</code> witness.
-          </div>
-        </div>
-
-        <div class="field">
-  <label>Self-Assessed Skill Score (1 – 100)</label>
-  <input type="number" id="skill"
-         min="1" max="100" placeholder="e.g. 85" required />
-  <div class="hint">
-    Maps to <code>secret_skill</code> witness. Be honest —
-    only you know the actual value.
-  </div>
-  <button type="button" class="calc-toggle" onclick="openCalculator()">
-    🧮 Use Skill Calculator (private)
-  </button>
-</div>
-
-        <button type="submit" class="btn-full" id="applyBtn">
-          🔐 Generate ZK Proof & Apply
+    <!-- APPLICATION & PROVER CARD -->
+    <div class="card" style="position: relative;">
+      <!-- TAB SELECTOR -->
+      <div style="display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
+        <button type="button" id="tabApply" class="btn-sm btn-sm-primary" style="flex: 1; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; outline: none; transition: all 0.2s;">
+          📝 Apply to Job Role
         </button>
+        <button type="button" id="tabDisclose" class="btn-sm btn-sm-ghost" style="flex: 1; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; outline: none; transition: all 0.2s;">
+          🔬 ZK Trait Prover (Disclosure)
+        </button>
+      </div>
 
-      </form>
+      <!-- TAB 1: APPLY TO ROLE -->
+      <div id="tabApplyContent">
+        <h2>
+          🔐 Your Qualifications
+          <span class="prv-tag">🛡️ ZK WITNESSES</span>
+        </h2>
+        <p class="sub">
+          These values are private ZK witnesses. They feed into the local ZK circuit and are NEVER transmitted or stored on-chain.
+        </p>
+
+        <!-- SELECT JOB DROPDOWN -->
+        <div class="field" style="margin-bottom: 20px;">
+          <label style="color: var(--purple-lt); font-weight: 700;">Select Job Posting to Apply For</label>
+          <select id="jobSelector" style="width:100%; padding:13px 16px; background:rgba(10,10,20,.8); border:1px solid var(--border); border-radius:10px; color:var(--text); font-weight:600; outline:none; cursor:pointer;" required>
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+
+        <form id="applyForm">
+
+          <!-- Personal data — shielded -->
+          <div class="field">
+            <label>
+              Your Name
+              <span class="prv-tag">🔒 Never transmitted</span>
+            </label>
+            <input type="text" id="name" placeholder="e.g. Ahmad" required />
+            <div class="hint">
+              Used only for your local reference. Not part of the ZK proof.
+            </div>
+          </div>
+
+          <div class="field">
+            <label>
+              Your Age
+              <span class="prv-tag">🔒 Never transmitted</span>
+            </label>
+            <input type="number" id="age" placeholder="e.g. 25" required />
+            <div class="hint">
+              Shielded — the employer will never see this.
+            </div>
+          </div>
+
+          <div class="divider">ZK CIRCUIT INPUTS (secret_ witnesses)</div>
+
+          <div class="field">
+            <label>Years of Experience</label>
+            <input type="number" id="years"
+                   min="0" max="30" placeholder="e.g. 5" required />
+            <div class="hint">
+              Maps to <code>secret_years</code> witness in Compact contract.
+              Only pass/fail is revealed on-chain.
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Highest Education Level</label>
+            <select id="education" required>
+              <option value="">Select your education...</option>
+              <option value="1">1 — High School Diploma</option>
+              <option value="2">2 — Associate's Degree</option>
+              <option value="3">3 — Bachelor's Degree</option>
+              <option value="4">4 — Master's Degree</option>
+              <option value="5">5 — PhD / Doctorate</option>
+            </select>
+            <div class="hint">
+              Maps to <code>secret_education</code> witness.
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Self-Assessed Skill Score (1 – 100)</label>
+            <input type="number" id="skill"
+                   min="1" max="100" placeholder="e.g. 85" required />
+            <div class="hint">
+              Maps to <code>secret_skill</code> witness. Be honest —
+              only you know the actual value.
+            </div>
+            <button type="button" class="calc-toggle" onclick="openCalculator()">
+              🧮 Use Skill Calculator (private)
+            </button>
+          </div>
+
+          <button type="submit" class="btn-full" id="applyBtn">
+            🔐 Generate ZK Proof & Apply
+          </button>
+
+        </form>
+      </div>
+
+      <!-- TAB 2: SELECTIVE DISCLOSURE -->
+      <div id="tabDiscloseContent" style="display: none;">
+        <h2>
+          🔬 Selective Disclosure
+          <span class="prv-tag" style="background: rgba(0,206,201,0.12); color: var(--teal);">🛡️ CIRCUIT 3 ACTIVE</span>
+        </h2>
+        <p class="sub">
+          Prove a single specific trait meets a threshold (e.g. "I hold a Master's degree") without revealing your other qualifications or identity.
+        </p>
+
+        <form id="discloseForm">
+          <div class="field">
+            <label>Select Trait to Prove</label>
+            <select id="discloseAttribute" style="width:100%; padding:13px 16px; background:rgba(10,10,20,.8); border:1px solid rgba(0,206,201,.22); border-radius:10px; color:var(--text); cursor:pointer;" required>
+              <option value="1">Years of Experience</option>
+              <option value="2">Highest Education Level</option>
+              <option value="3">Self-Assessed Skill Score (1-100)</option>
+            </select>
+          </div>
+
+          <div class="field" id="discloseThresholdContainer">
+            <label id="lblDiscloseThreshold">Threshold Value to Prove (e.g. ≥ X)</label>
+            <div id="discloseValWrapper">
+              <input type="number" id="discloseThreshold" min="1" max="100" placeholder="e.g. 5" required />
+            </div>
+            <div class="hint" id="discloseThresholdHint">Enter the minimum value you want to prove you exceed.</div>
+          </div>
+
+          <div class="divider">SECRET WITNESS CREDENTIALS</div>
+
+          <div class="field">
+            <label>Your True Value (Private Witness)</label>
+            <input type="number" id="trueWitnessValue" placeholder="Enter your true private value" required />
+            <div class="hint" style="color:var(--teal);">This is your private input. If it is greater than or equal to the threshold, the ZK proof will succeed!</div>
+          </div>
+
+          <button type="submit" class="btn-full" id="discloseBtn" style="background: linear-gradient(135deg, var(--teal), var(--teal-lt)); border: none;">
+            ⚡ Generate ZK Trait Proof
+          </button>
+        </form>
+
+        <!-- DISCLOSE RESULT (HIDDEN BY DEFAULT) -->
+        <div id="discloseResultBox" style="display: none; margin-top: 24px; padding: 22px; background: rgba(0,206,201,0.06); border: 1px solid rgba(0,206,201,0.25); border-radius: 12px; text-align: left;">
+          <div style="text-align: center; margin-bottom: 16px;">
+            <span style="font-size: 42px;">🟢</span>
+            <h3 style="color: var(--teal); font-size: 19px; margin-top: 8px; margin-bottom: 4px;">ZK Trait Proven Successfully!</h3>
+            <p style="color: var(--muted); font-size: 12px;">The mathematical ZK-SNARK proof verifies your claim.</p>
+          </div>
+
+          <div class="row">
+            <span class="lbl">Proven Statement</span>
+            <span class="val" id="dStatementText" style="color: var(--teal-lt); font-weight: bold;">—</span>
+          </div>
+          <div class="row">
+            <span class="lbl">Proof Hash</span>
+            <span class="val" id="dProofHashText" style="font-size: 11px; font-family: monospace;">—</span>
+          </div>
+
+          <div class="field" style="margin-top: 18px;">
+            <label style="color: var(--teal-lt); display: flex; justify-content: space-between; align-items: center;">
+              <span>Shareable ZK Trait Proof Token:</span>
+              <button type="button" id="copyTokenBtn" class="btn-sm btn-sm-ghost" style="padding: 2px 8px; font-size: 10px; cursor: pointer;">📋 Copy Token</button>
+            </label>
+            <textarea id="proofTokenOutput" readonly rows="4" 
+                      style="width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid rgba(0,206,201,0.22); border-radius: 8px; color: var(--text); font-family: monospace; font-size: 11px; resize: none; outline: none; margin-top: 6px;"></textarea>
+            <div class="hint">Candidates can copy and send this token to employers to verify this specific trait.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- LOADING / PROOF GENERATION -->
@@ -559,6 +649,8 @@
   </div><!-- /container -->
 
   <script type="module">
+    import { contractAPI } from '../contract-layer/contract-api.ts';
+    import { DisclosureAttribute, JobMode } from '../contract-layer/types.ts';
 
     const EDU_LABELS = {
       '1': 'High School Diploma',
@@ -568,87 +660,211 @@
       '5': 'PhD / Doctorate',
     };
 
-    function genHash(len = 64) {
-      return '0x' + Array.from(
-        { length: len },
-        () => Math.floor(Math.random() * 16).toString(16)
-      ).join('');
-    }
+    const ATTRIBUTE_LABELS = {
+      1: 'Years of Experience',
+      2: 'Highest Education Level',
+      3: 'Self-Assessed Skill Score',
+    };
 
     function delay(ms) {
       return new Promise(r => setTimeout(r, ms));
     }
 
-    // ── Load job from localStorage (set by employer page) ──
-    const stored = localStorage.getItem('shieldhire_deployment');
-    
-    // Weighted circuit snippet
+    // ── Tab Management ──────────────────────────────────────────
+    const tabApply = document.getElementById('tabApply');
+    const tabDisclose = document.getElementById('tabDisclose');
+    const contentApply = document.getElementById('tabApplyContent');
+    const contentDisclose = document.getElementById('tabDiscloseContent');
+
+    tabApply.addEventListener('click', () => {
+      tabApply.className = 'btn-sm btn-sm-primary';
+      tabDisclose.className = 'btn-sm btn-sm-ghost';
+      contentApply.style.display = 'block';
+      contentDisclose.style.display = 'none';
+      document.getElementById('jobCard').style.display = 'block'; // Show job card for context
+    });
+
+    tabDisclose.addEventListener('click', () => {
+      tabApply.className = 'btn-sm btn-sm-ghost';
+      tabDisclose.className = 'btn-sm btn-sm-primary';
+      tabDisclose.style.background = 'linear-gradient(135deg, var(--teal), var(--teal-lt))';
+      tabDisclose.style.color = '#fff';
+      tabDisclose.style.border = 'none';
+      contentApply.style.display = 'none';
+      contentDisclose.style.display = 'block';
+      document.getElementById('jobCard').style.display = 'none'; // Hide specific role details in disclosure mode
+    });
+
+    // ── Dynamic Selective Disclosure Inputs ──────────────────────
+    const attributeSelector = document.getElementById('discloseAttribute');
+    const thresholdWrapper = document.getElementById('discloseValWrapper');
+    const trueWitnessInput = document.getElementById('trueWitnessValue');
+
+    function updateSelectiveProverInputs() {
+      const attr = parseInt(attributeSelector.value);
+      
+      if (attr === 2) { // Education Level
+        thresholdWrapper.innerHTML = `
+          <select id="discloseThreshold" style="width:100%; padding:13px 16px; background:rgba(10,10,20,.8); border:1px solid rgba(0,206,201,.22); border-radius:10px; color:var(--text); cursor:pointer;">
+            <option value="1">1 — High School Diploma</option>
+            <option value="2">2 — Associate's Degree</option>
+            <option value="3">3 — Bachelor's Degree</option>
+            <option value="4">4 — Master's Degree</option>
+            <option value="5">5 — PhD / Doctorate</option>
+          </select>
+        `;
+        // Make true witness match type
+        trueWitnessInput.type = 'number';
+        trueWitnessInput.min = '1';
+        trueWitnessInput.max = '5';
+        trueWitnessInput.placeholder = 'Enter your education level (1-5)';
+      } else if (attr === 1) { // Years Experience
+        thresholdWrapper.innerHTML = `
+          <input type="number" id="discloseThreshold" min="0" max="30" placeholder="e.g. 5" required />
+        `;
+        trueWitnessInput.type = 'number';
+        trueWitnessInput.min = '0';
+        trueWitnessInput.max = '30';
+        trueWitnessInput.placeholder = 'Enter your actual years of experience';
+      } else if (attr === 3) { // Skill Score
+        thresholdWrapper.innerHTML = `
+          <input type="number" id="discloseThreshold" min="1" max="100" placeholder="e.g. 80" required />
+        `;
+        trueWitnessInput.type = 'number';
+        trueWitnessInput.min = '1';
+        trueWitnessInput.max = '100';
+        trueWitnessInput.placeholder = 'Enter your actual skill score';
+      }
+    }
+
+    attributeSelector.addEventListener('change', updateSelectiveProverInputs);
+    updateSelectiveProverInputs(); // run once on load
+
+    // ── Dynamic Job Selection & Requirements Rendering ───────────
+    const jobSelector = document.getElementById('jobSelector');
+
     const WEIGHTED_SNIPPET = `
 <span class="ic-comment">// Compact circuit that ran inside this proof:</span>
 
 <span class="ic-keyword">circuit</span> weightedQualification(
-  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateYears</span>:     Uint32,    <span class="ic-comment">// hidden</span>
-  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateEducation</span>: Uint32,    <span class="ic-comment">// hidden</span>
-  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateSkill</span>:     Uint32,    <span class="ic-comment">// hidden</span>
-  <span class="ic-public">yearsWeight</span>:                Uint32,    <span class="ic-comment">// public</span>
-  <span class="ic-public">educationWeight</span>:            Uint32,    <span class="ic-comment">// public</span>
-  <span class="ic-public">skillWeight</span>:                Uint32,    <span class="ic-comment">// public</span>
-  <span class="ic-public">threshold</span>:                  Uint32     <span class="ic-comment">// public</span>
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateYears</span>:     Uint32,    <span class="ic-comment">// hidden witness</span>
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateEducation</span>: Uint32,    <span class="ic-comment">// hidden witness</span>
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateSkill</span>:     Uint32,    <span class="ic-comment">// hidden witness</span>
+  <span class="ic-public">yearsWeight</span>:                Uint32,    <span class="ic-comment">// public config</span>
+  <span class="ic-public">educationWeight</span>:            Uint32,    <span class="ic-comment">// public config</span>
+  <span class="ic-public">skillWeight</span>:                Uint32,    <span class="ic-comment">// public config</span>
+  <span class="ic-public">threshold</span>:                  Uint32     <span class="ic-comment">// public threshold</span>
 ): <span class="ic-string">Boolean</span> {
   <span class="ic-keyword">return</span> (<span class="ic-witness">candidateYears</span> * <span class="ic-public">yearsWeight</span>)
        + (<span class="ic-witness">candidateEducation</span> * <span class="ic-public">educationWeight</span>)
        + (<span class="ic-witness">candidateSkill</span> * <span class="ic-public">skillWeight</span>) &gt;= <span class="ic-public">threshold</span>;
 }`;
 
-    if (stored) {
-      const { requirements, jobTitle, jobMode, weightedConfig } = JSON.parse(stored);
-      document.getElementById('jobCard').classList.add('show');
-      document.getElementById('jobTitleDisplay').textContent = jobTitle || '—';
+    const STRICT_SNIPPET = `
+<span class="ic-comment">// Compact circuit that ran inside this proof:</span>
 
-      if (jobMode === 2 && weightedConfig) {
-        // Show weighted configuration
+<span class="ic-keyword">circuit</span> strictQualification(
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateYears</span>:     Uint32,    <span class="ic-comment">// hidden witness</span>
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateEducation</span>: Uint32,    <span class="ic-comment">// hidden witness</span>
+  <span class="ic-keyword">witness</span> <span class="ic-witness">candidateSkill</span>:     Uint32,    <span class="ic-comment">// hidden witness</span>
+  <span class="ic-public">minYears</span>:                   Uint32,    <span class="ic-comment">// public threshold</span>
+  <span class="ic-public">minEducation</span>:               Uint32,    <span class="ic-comment">// public threshold</span>
+  <span class="ic-public">minSkill</span>:                   Uint32     <span class="ic-comment">// public threshold</span>
+): <span class="ic-string">Boolean</span> {
+  <span class="ic-keyword">return</span> <span class="ic-witness">candidateYears</span> &gt;= <span class="ic-public">minYears</span>
+      &amp;&amp; <span class="ic-witness">candidateEducation</span> &gt;= <span class="ic-public">minEducation</span>
+      &amp;&amp; <span class="ic-witness">candidateSkill</span> &gt;= <span class="ic-public">minSkill</span>;
+}`;
+
+    function populateJobs() {
+      const jobs = contractAPI.getJobs();
+      jobSelector.innerHTML = '';
+      
+      if (!jobs || jobs.length === 0) {
+        jobSelector.innerHTML = '<option value="">No deployed jobs found...</option>';
+        return;
+      }
+
+      jobs.forEach(job => {
+        const option = document.createElement('option');
+        option.value = job.id;
+        option.textContent = `${job.jobTitle} (${job.status === 'active' ? 'Active' : 'Closed'})`;
+        jobSelector.appendChild(option);
+      });
+
+      // Synchronize with URL query parameter ?jobId=
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlJobId = urlParams.get('jobId');
+      if (urlJobId && jobs.some(j => j.id === urlJobId)) {
+        jobSelector.value = urlJobId;
+      } else {
+        jobSelector.selectedIndex = 0;
+      }
+
+      renderSelectedJobRequirements();
+    }
+
+    function renderSelectedJobRequirements() {
+      const jobId = jobSelector.value;
+      if (!jobId) return;
+
+      const job = contractAPI.getJobById(jobId);
+      if (!job) return;
+
+      document.getElementById('jobCard').classList.add('show');
+      document.getElementById('jobTitleDisplay').textContent = job.jobTitle;
+
+      const isWeighted = job.jobMode === 2;
+      const thresholdRow = document.getElementById('thresholdRow');
+      if (thresholdRow) thresholdRow.remove();
+
+      if (isWeighted && job.weightedConfig) {
         document.getElementById('lblYears').textContent = 'Experience Weight';
         document.getElementById('lblEdu').textContent = 'Education Weight';
         document.getElementById('lblSkill').textContent = 'Skill Score Weight';
 
-        document.getElementById('dYears').textContent  = `${weightedConfig.yearsWeight}× weight`;
-        document.getElementById('dEdu').textContent    = `${weightedConfig.educationWeight}× weight`;
-        document.getElementById('dSkill').textContent  = `${weightedConfig.skillWeight}× weight`;
-
-        const existingRow = document.getElementById('thresholdRow');
-        if (existingRow) existingRow.remove();
+        document.getElementById('dYears').textContent  = `${job.weightedConfig.yearsWeight}× weight`;
+        document.getElementById('dEdu').textContent    = `${job.weightedConfig.educationWeight}× weight`;
+        document.getElementById('dSkill').textContent  = `${job.weightedConfig.skillWeight}× weight`;
 
         const row = document.createElement('div');
         row.className = 'row';
         row.id = 'thresholdRow';
         row.innerHTML = `<span class="lbl">Score Threshold</span>
-                         <span class="val">${weightedConfig.scoreThreshold} pts</span>`;
+                         <span class="val" style="color: var(--teal-lt); font-weight: bold;">${job.weightedConfig.scoreThreshold} pts</span>`;
         document.getElementById('jobCard').appendChild(row);
 
-        // Update ZK Proof Inspector values
         document.getElementById('insCircuit').textContent = 'weightedQualification';
-        const codeBlock = document.getElementById('circuitCode');
-        if (codeBlock) codeBlock.innerHTML = WEIGHTED_SNIPPET;
+        document.getElementById('circuitCode').innerHTML = WEIGHTED_SNIPPET;
       } else {
         document.getElementById('lblYears').textContent = 'Min. Experience Required';
         document.getElementById('lblEdu').textContent = 'Min. Education Required';
         document.getElementById('lblSkill').textContent = 'Min. Skill Score Required';
 
-        document.getElementById('dYears').textContent = requirements.minYearsExperience + ' years';
-        document.getElementById('dEdu').textContent = EDU_LABELS[requirements.minEducationLevel] || '—';
-        document.getElementById('dSkill').textContent = requirements.minSkillScore + ' / 100';
+        document.getElementById('dYears').textContent = job.requirements.minYearsExperience + ' years';
+        document.getElementById('dEdu').textContent   = EDU_LABELS[job.requirements.minEducationLevel] || job.requirements.minEducationLevel;
+        document.getElementById('dSkill').textContent = job.requirements.minSkillScore + ' / 100';
 
-        const existingRow = document.getElementById('thresholdRow');
-        if (existingRow) existingRow.remove();
+        document.getElementById('insCircuit').textContent = 'strictQualification';
+        document.getElementById('circuitCode').innerHTML = STRICT_SNIPPET;
       }
     }
+
+    jobSelector.addEventListener('change', renderSelectedJobRequirements);
 
     // ── ZK proof step animator ─────────────────────────────
     const stepIds = ['s1','s2','s3','s4','s5'];
 
     async function animateProofSteps() {
+      // Reset steps
+      stepIds.forEach(id => {
+        const el = document.getElementById(id);
+        el.className = 'step-item';
+        el.textContent = el.textContent.replace('✅ ', '⏳ ').replace('⚡ ', '⏳ ');
+      });
+
       for (let i = 0; i < stepIds.length; i++) {
-        await delay(900);
+        await delay(800);
         if (i > 0) {
           const prev = document.getElementById(stepIds[i - 1]);
           prev.classList.remove('active');
@@ -666,112 +882,169 @@
       last.textContent = '✅ ' + last.textContent.slice(2);
     }
 
-    // ── Form submit ────────────────────────────────────────
-    document.getElementById('applyForm')
-      .addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // ── Full Job Application submission ────────────────────
+    document.getElementById('applyForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-        // Read ZK witness values
-        const years     = parseInt(document.getElementById('years').value);
-        const education = parseInt(document.getElementById('education').value);
-        const skill     = parseInt(document.getElementById('skill').value);
+      const jobId = jobSelector.value;
+      if (!jobId) {
+        alert('Please select a valid job to apply for.');
+        return;
+      }
 
-        // Read requirements (from localStorage or defaults)
-        let minYears = 3, minEdu = 3, minSkill = 70;
-        if (stored) {
-          const { requirements } = JSON.parse(stored);
-          minYears = requirements.minYearsExperience;
-          minEdu   = requirements.minEducationLevel;
-          minSkill = requirements.minSkillScore;
-        }
+      // Hide previous results
+      document.getElementById('resYes').classList.remove('show');
+      document.getElementById('resNo').classList.remove('show');
 
-        // Log to console (mirrors contract-api.ts behaviour)
-        console.log('[ShieldHire] === ZK PROOF GENERATION START ===');
-        console.log('[ShieldHire] PRIVATE witnesses (local only):');
-        console.log('  secret_years:    ', years);
-        console.log('  secret_education:', education);
-        console.log('  secret_skill:    ', skill);
-        console.log('[ShieldHire] PUBLIC inputs from ledger:');
-        console.log('  minYears:    ', minYears);
-        console.log('  minEducation:', minEdu);
-        console.log('  minSkill:    ', minSkill);
+      const years     = parseInt(document.getElementById('years').value);
+      const education = parseInt(document.getElementById('education').value);
+      const skill     = parseInt(document.getElementById('skill').value);
 
-        document.getElementById('applyBtn').disabled = true;
-        document.getElementById('loading').classList.add('show');
+      document.getElementById('applyBtn').disabled = true;
+      document.getElementById('loading').classList.add('show');
 
+      try {
         await animateProofSteps();
-        await delay(400);
+        await delay(300);
 
-        // Mirrors qualificationCheck() circuit in Compact
-        // Determine qualification based on job mode
-const stored2 = localStorage.getItem('shieldhire_deployment');
-const jobData = stored2 ? JSON.parse(stored2) : null;
-const mode    = jobData ? (jobData.jobMode || 1) : 1;
-
-let qualified = false;
-let weightedScore = 0;
-
-if (mode === 1) {
-  // Strict mode — all minimums required
-  qualified = years >= minYears &&
-              education >= minEdu &&
-              skill >= minSkill;
-  console.log('[ShieldHire] Mode: STRICT');
-} else {
-  // Weighted mode — calculate score
-  const cfg = jobData.weightedConfig;
-  weightedScore = (years * cfg.yearsWeight)
-                + (education * cfg.educationWeight)
-                + (skill * cfg.skillWeight);
-  qualified = weightedScore >= cfg.scoreThreshold;
-  console.log('[ShieldHire] Mode: WEIGHTED');
-  console.log('[ShieldHire] Weighted score:', weightedScore);
-  console.log('[ShieldHire] Threshold:', cfg.scoreThreshold);
-}
-        console.log('[ShieldHire] Result:', qualified ? 'QUALIFIED ✅' : 'NOT QUALIFIED ❌');
-        console.log('[ShieldHire] Data exposed to employer: [] (zero — ZK guarantee)');
+        const result = await contractAPI.applyWithZKProof(jobId, {
+          secret_years: years,
+          secret_education: education,
+          secret_skill: skill
+        });
 
         document.getElementById('loading').classList.remove('show');
+        document.getElementById('applyBtn').disabled = false;
 
-        // Animate proof inspector metrics unconditionally
-        setTimeout(() => {
-          const constraints = 800 + Math.floor(Math.random() * 200);
-          const proofSize   = 180 + Math.floor(Math.random() * 30);
-          const genTime     = (1.5 + Math.random() * 0.8).toFixed(1);
-          const verifyTime  = 10 + Math.floor(Math.random() * 10);
+        // Animate proof inspector metrics
+        const constraints = 800 + Math.floor(Math.random() * 200);
+        const proofSize   = 180 + Math.floor(Math.random() * 30);
+        const genTime     = (1.2 + Math.random() * 0.7).toFixed(1);
+        const verifyTime  = 9 + Math.floor(Math.random() * 8);
 
-          const insConstraints = document.getElementById('insConstraints');
-          const insSize        = document.getElementById('insSize');
-          const insGenTime     = document.getElementById('insGenTime');
-          const insVerifyTime  = document.getElementById('insVerifyTime');
+        document.getElementById('insConstraints').textContent = constraints;
+        document.getElementById('insSize').innerHTML = proofSize + '<span class="metric-unit">bytes</span>';
+        document.getElementById('insGenTime').innerHTML = genTime + '<span class="metric-unit">sec</span>';
+        document.getElementById('insVerifyTime').innerHTML = verifyTime + '<span class="metric-unit">ms</span>';
 
-          if (insConstraints) insConstraints.textContent = constraints;
-          if (insSize)        insSize.innerHTML = proofSize + '<span class="metric-unit">bytes</span>';
-          if (insGenTime)     insGenTime.innerHTML = genTime + '<span class="metric-unit">sec</span>';
-          if (insVerifyTime)  insVerifyTime.innerHTML = verifyTime + '<span class="metric-unit">ms</span>';
-        }, 500);
-
-        // Accumulate deterministic counters persistently
-        const counters = JSON.parse(localStorage.getItem('shieldhire_counters') || '{"total":0,"qualified":0}');
-        counters.total++;
-        if (qualified) counters.qualified++;
-        localStorage.setItem('shieldhire_counters', JSON.stringify(counters));
-
-        if (qualified) {
-          document.getElementById('candId').textContent =
-            Math.floor(Math.random() * 9000) + 1000;
-          document.getElementById('proofHash').textContent =
-            genHash(64).slice(0, 26) + '...';
-          document.getElementById('txHash').textContent =
-            genHash(64).slice(0, 26) + '...';
-          document.getElementById('ts').textContent =
-            new Date().toISOString();
+        if (result.qualified) {
+          document.getElementById('candId').textContent = result.candidateId;
+          document.getElementById('proofHash').textContent = result.proofHash;
+          document.getElementById('txHash').textContent = result.transactionHash;
+          document.getElementById('ts').textContent = new Date(result.timestamp).toLocaleString();
           document.getElementById('resYes').classList.add('show');
+          document.getElementById('resYes').scrollIntoView({ behavior: 'smooth' });
+          if (window.showToast) {
+            window.showToast('ZK-SNARK proof generated. Application submitted!', '🎉');
+          }
         } else {
           document.getElementById('resNo').classList.add('show');
+          document.getElementById('resNo').scrollIntoView({ behavior: 'smooth' });
+          if (window.showToast) {
+            window.showToast('Proof generated: Criteria not met.', 'ℹ️');
+          }
         }
-      });
+      } catch (err) {
+        document.getElementById('loading').classList.remove('show');
+        document.getElementById('applyBtn').disabled = false;
+        alert('ZK Application Error: ' + err.message);
+      }
+    });
 
+    // ── ZK Selective Disclosure submission ──────────────────
+    document.getElementById('discloseForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const attribute = parseInt(attributeSelector.value);
+      const threshold = parseInt(document.getElementById('discloseThreshold').value);
+      const trueVal   = parseInt(trueWitnessInput.value);
+
+      const resultBox = document.getElementById('discloseResultBox');
+      resultBox.style.display = 'none';
+
+      document.getElementById('discloseBtn').disabled = true;
+      document.getElementById('discloseBtn').innerHTML = '⏳ Local Witness Encryption...';
+
+      await delay(900); // simulated local witness assembly
+
+      document.getElementById('discloseBtn').innerHTML = '⚡ Generating Selective SNARK...';
+
+      try {
+        const witnesses = {
+          secret_years: attribute === 1 ? trueVal : 0,
+          secret_education: attribute === 2 ? trueVal : 0,
+          secret_skill: attribute === 3 ? trueVal : 0
+        };
+
+        const result = await contractAPI.proveSpecificTrait(witnesses, attribute, threshold);
+
+        document.getElementById('discloseBtn').disabled = false;
+        document.getElementById('discloseBtn').innerHTML = '⚡ Generate ZK Trait Proof';
+
+        if (!result.proven) {
+          alert('ZK Proof Failed: Your true private value (' + trueVal + ') is LESS than the threshold (' + threshold + '). A valid ZK proof cannot be generated.');
+          return;
+        }
+
+        // Success - populate result panel
+        const attrLabel = ATTRIBUTE_LABELS[result.attribute] || 'Attribute';
+        
+        let statText = '';
+        if (result.attribute === 1) {
+          statText = `Proven years of experience ≥ <strong>${result.threshold} years</strong>`;
+        } else if (result.attribute === 2) {
+          statText = `Proven highest education level meets or exceeds <strong>${EDU_LABELS[result.threshold] || result.threshold}</strong>`;
+        } else if (result.attribute === 3) {
+          statText = `Proven self-assessed skill proficiency score ≥ <strong>${result.threshold} / 100</strong>`;
+        }
+
+        document.getElementById('dStatementText').innerHTML = statText;
+        document.getElementById('dProofHashText').textContent = result.proofHash;
+
+        // Produce a shareable proof token
+        const tokenPayload = {
+          attribute: result.attribute,
+          threshold: result.threshold,
+          proven: result.proven,
+          proofHash: result.proofHash,
+          transactionHash: result.transactionHash,
+          blockHeight: result.blockHeight,
+          timestamp: result.timestamp
+        };
+        
+        const tokenString = JSON.stringify(tokenPayload);
+        document.getElementById('proofTokenOutput').value = tokenString;
+
+        resultBox.style.display = 'block';
+        resultBox.scrollIntoView({ behavior: 'smooth' });
+
+        // Copy Token event
+        document.getElementById('copyTokenBtn').onclick = () => {
+          navigator.clipboard.writeText(tokenString).then(() => {
+            if (window.showToast) {
+              window.showToast('ZK Proof Token copied to clipboard!', '📋');
+            } else {
+              alert('ZK Proof Token copied!');
+            }
+          });
+        };
+
+        if (window.showToast) {
+          window.showToast('Selective disclosure proof generated!', '🔬');
+        }
+      } catch (err) {
+        document.getElementById('discloseBtn').disabled = false;
+        document.getElementById('discloseBtn').innerHTML = '⚡ Generate ZK Trait Proof';
+        alert('Selective Disclosure Error: ' + err.message);
+      }
+    });
+
+    // Run setup on load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Connect wallet implicitly
+      contractAPI.connectWallet();
+      populateJobs();
+    });
   </script>
   <script type="module" src="enhance.js"></script>
   <!-- ═══ SKILL CALCULATOR MODAL ═══════════════════════ -->

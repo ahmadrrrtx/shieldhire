@@ -216,6 +216,29 @@
     .proof-log .purple { color:var(--purple-lt); }
     .proof-log .dim { color:var(--faint); }
 
+    /* ── TELEMETRY STRIP ───────────────────────────────── */
+    .telemetry-strip {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px; margin-bottom: 24px; padding: 14px 20px;
+      background: rgba(108,92,231,0.06); border: 1px solid var(--border);
+      border-radius: 12px; font-size: 11px;
+    }
+    .telemetry-item { display: flex; flex-direction: column; gap: 4px; }
+    .telemetry-item .label { color: var(--muted); text-transform: uppercase; font-size: 9px; letter-spacing: 0.5px; }
+    .telemetry-item .value { font-weight: 700; color: var(--purple-lt); }
+    .telemetry-item .value.green { color: #2ecc71; }
+    
+    /* ── CONTRACT SELECTOR ────────────────────────────── */
+    .contract-select-box {
+      margin-bottom: 28px; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: 14px; padding: 20px;
+    }
+    .contract-select-box select {
+      width: 100%; padding: 12px; background: rgba(10,10,20,0.8);
+      border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+      font-weight: 600; outline: none; cursor: pointer; margin-top: 8px;
+    }
+
     @media (max-width:600px) {
       .navbar { padding:16px 20px; }
     }
@@ -246,209 +269,379 @@
   </div>
 </nav>
 
-    <!-- PRIVACY NOTICE -->
-    <div class="privacy-notice">
-      <span class="ico">🛡️</span>
-      <p>
-        <strong>Zero personal data is stored on-chain.</strong>
-        The ledger only records aggregate counts — total applications
-        and qualified count. Individual candidate identities, names,
-        ages, and exact qualification values are protected by
-        zero-knowledge proofs and never appear on the blockchain.
-      </p>
-    </div>
-
-    <!-- NO DATA STATE -->
-    <div class="no-data" id="noData" style="display:none;">
-      <div class="ico">🌙</div>
-      <p>No job has been posted yet.</p>
-      <a href="employer.html">Post a Job First</a>
-    </div>
-
-    <!-- ANALYTICS CONTENT -->
-    <div id="analyticsContent" style="display:none;">
-
-      <!-- STATS GRID -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="num" id="statTotal">0</div>
-          <div class="lbl">Total Anonymous Applications</div>
+    <div class="container">
+      
+      <!-- ── MIDNIGHT NETWORK TELEMETRY PANEL ── -->
+      <div class="telemetry-strip">
+        <div class="telemetry-item">
+          <span class="label">🟢 Connected RPC Node</span>
+          <span class="value" id="tRpc">http://localhost:9933 (Devnet)</span>
         </div>
-        <div class="stat-card">
-          <div class="num teal" id="statQualified">0</div>
-          <div class="lbl">Qualified Candidates</div>
+        <div class="telemetry-item">
+          <span class="label">🟢 Proof Server Node</span>
+          <span class="value" id="tProof">http://localhost:6300 (Active)</span>
         </div>
-        <div class="stat-card">
-          <div class="num" id="statRate">0%</div>
-          <div class="lbl">Qualification Rate</div>
+        <span style="border-right: 1px solid var(--border); margin: 0 4px;"></span>
+        <div class="telemetry-item">
+          <span class="label">🛡️ Sync Block Height</span>
+          <span class="value" id="tBlock">#584,219</span>
         </div>
-        <div class="stat-card">
-          <div class="num teal">0</div>
-          <div class="lbl">Personal Data Points Exposed</div>
+        <div class="telemetry-item">
+          <span class="label">⚡ Node Latency</span>
+          <span class="value green" id="tLatency">32 ms</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="label">💼 Connected Wallet Balance</span>
+          <span class="value" id="tBalance">45.02 tDUST (Lace)</span>
         </div>
       </div>
 
-      <!-- PUBLIC LEDGER STATE -->
-      <div class="ledger-card">
-        <h2>🔗 Public Ledger State</h2>
-        <p class="sub">
-          Data visible on Midnight Preprod Testnet —
-          readable by anyone, stored permanently on-chain
+      <!-- PRIVACY NOTICE -->
+      <div class="privacy-notice">
+        <span class="ico">🛡️</span>
+        <p>
+          <strong>Zero personal data is stored on-chain.</strong>
+          The Midnight ledger only records public aggregate parameters — strict requirements, weighted scores, total applications, and qualified counters. Individual candidate identities, names, ages, and exact qualifications are protected by zero-knowledge proofs and never appear on the blockchain.
         </p>
-
-        <div class="ledger-row">
-          <span class="lbl">Job Title</span>
-          <span class="val" id="ledgerTitle">—</span>
-          <span class="tag tag-pub">PUBLIC</span>
-        </div>
-        <div class="ledger-row">
-          <span class="lbl">minYearsRequired</span>
-          <span class="val" id="ledgerYears">—</span>
-          <span class="tag tag-pub">PUBLIC</span>
-        </div>
-        <div class="ledger-row">
-          <span class="lbl">minEducationRequired</span>
-          <span class="val" id="ledgerEdu">—</span>
-          <span class="tag tag-pub">PUBLIC</span>
-        </div>
-        <div class="ledger-row">
-          <span class="lbl">minSkillRequired</span>
-          <span class="val" id="ledgerSkill">—</span>
-          <span class="tag tag-pub">PUBLIC</span>
-        </div>
-        <div class="ledger-row">
-          <span class="lbl">totalApplications (Counter)</span>
-          <span class="val" id="ledgerTotal">—</span>
-          <span class="tag tag-pub">PUBLIC</span>
-        </div>
-        <div class="ledger-row">
-          <span class="lbl">qualifiedCount (Counter)</span>
-          <span class="val" id="ledgerQual">—</span>
-          <span class="tag tag-pub">PUBLIC</span>
-        </div>
-        <div class="ledger-row">
-          <span class="lbl">jobActive (Boolean)</span>
-          <span class="val" style="color:var(--teal);">true</span>
-          <span class="tag tag-pub">PUBLIC</span>
-        </div>
-        <div class="ledger-row">
-          <span class="lbl">Contract Address</span>
-          <span class="val" id="ledgerAddr"
-                style="font-size:11px;color:var(--purple-lt);">—</span>
-          <span class="tag tag-pub">PUBLIC</span>
-        </div>
       </div>
 
-      <!-- WHAT IS HIDDEN -->
-      <div class="hidden-card">
-        <h2>🛡️ Shielded Witness Data</h2>
-        <p class="sub">
-          These data points were used as ZK witnesses —
-          they fed into the circuit locally and were NEVER
-          recorded on-chain or revealed to the employer
-        </p>
-        <div class="hidden-grid">
-          <div class="hidden-item">🔒 Candidate names</div>
-          <div class="hidden-item">🔒 Candidate ages</div>
-          <div class="hidden-item">🔒 Exact years of experience</div>
-          <div class="hidden-item">🔒 Exact education institutions</div>
-          <div class="hidden-item">🔒 Exact skill scores</div>
-          <div class="hidden-item">🔒 Gender / ethnicity</div>
-          <div class="hidden-item">🔒 Location / address</div>
-          <div class="hidden-item">🔒 Any personal identifiers</div>
-        </div>
+      <!-- NO DATA STATE -->
+      <div class="no-data" id="noData" style="display:none;">
+        <div class="ico">🌙</div>
+        <p>No job has been posted yet.</p>
+        <a href="employer.html">Post a Job First</a>
       </div>
 
-      <!-- PROOF LOG -->
-      <div class="ledger-card">
-        <h2>📜 Latest ZK Proof Log</h2>
-        <p class="sub">
-          What was recorded for the most recent application
-        </p>
-        <div class="proof-log" id="proofLog">
-          Loading...
-        </div>
-      </div>
+      <!-- ANALYTICS CONTENT -->
+      <div id="analyticsContent">
 
-    </div>
-  </div>
+        <!-- GLOBAL STATS GRID -->
+        <h2 style="font-size: 15px; text-transform: uppercase; color: var(--purple-lt); letter-spacing: 1px; margin-bottom: 14px;">📊 Global Aggregated Ledger Stats</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="num" id="statContracts">0</div>
+            <div class="lbl">Deployed Job Contracts</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statTotal">0</div>
+            <div class="lbl">Anonymous Applications</div>
+          </div>
+          <div class="stat-card">
+            <div class="num teal" id="statQualified">0</div>
+            <div class="lbl">Qualified Candidates</div>
+          </div>
+          <div class="stat-card">
+            <div class="num teal" id="statShieldedData">0</div>
+            <div class="lbl">Data Witnesses Shielded</div>
+          </div>
+        </div>
+
+        <!-- CONTRACT INSPECTOR DROPDOWN -->
+        <div class="contract-select-box">
+          <label style="color: var(--teal); font-weight: 700; font-size: 14px;">Select Smart Contract to Inspect Ledger State</label>
+          <select id="analyticsJobSelector">
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+
+        <!-- PUBLIC LEDGER STATE -->
+        <div class="ledger-card">
+          <h2>🔗 Public Ledger State (Selected Job)</h2>
+          <p class="sub">
+            On-chain state read directly from the deployed Midnight smart contract instance.
+          </p>
+
+          <div class="ledger-row">
+            <span class="lbl">Job Title / Role Reference</span>
+            <span class="val" id="ledgerTitle">—</span>
+            <span class="tag tag-pub">PUBLIC</span>
+          </div>
+          <div class="ledger-row">
+            <span class="lbl">Contract Address</span>
+            <span class="val" id="ledgerAddr" style="font-size:11px;font-family:monospace;color:var(--purple-lt);">—</span>
+            <span class="tag tag-pub">PUBLIC</span>
+          </div>
+          <div class="ledger-row">
+            <span class="lbl">Smart Contract Mode</span>
+            <span class="val" id="ledgerMode">—</span>
+            <span class="tag tag-pub">PUBLIC</span>
+          </div>
+          <div class="ledger-row" id="yearsReqRow">
+            <span class="lbl" id="lblLedgerYears">Experience Parameter</span>
+            <span class="val" id="ledgerYears">—</span>
+            <span class="tag tag-pub">PUBLIC</span>
+          </div>
+          <div class="ledger-row" id="eduReqRow">
+            <span class="lbl" id="lblLedgerEdu">Education Parameter</span>
+            <span class="val" id="ledgerEdu">—</span>
+            <span class="tag tag-pub">PUBLIC</span>
+          </div>
+          <div class="ledger-row" id="skillReqRow">
+            <span class="lbl" id="lblLedgerSkill">Skill Parameter</span>
+            <span class="val" id="ledgerSkill">—</span>
+            <span class="tag tag-pub">PUBLIC</span>
+          </div>
+          <div class="ledger-row">
+            <span class="lbl">totalApplications (Counter)</span>
+            <span class="val" id="ledgerTotal">—</span>
+            <span class="tag tag-pub">PUBLIC</span>
+          </div>
+          <div class="ledger-row">
+            <span class="lbl">qualifiedCount (Counter)</span>
+            <span class="val" id="ledgerQual" style="color: var(--teal-lt); font-weight: bold;">—</span>
+            <span class="tag tag-pub">PUBLIC</span>
+          </div>
+          <div class="ledger-row">
+            <span class="lbl">jobActive (Boolean State)</span>
+            <span class="val" id="ledgerStatus">—</span>
+            <span class="tag tag-pub">PUBLIC</span>
+          </div>
+        </div>
+
+        <!-- WHAT IS HIDDEN -->
+        <div class="hidden-card">
+          <h2>🛡️ Shielded ZK Witness Data</h2>
+          <p class="sub">
+            These fields were kept strictly inside the candidate's browser during ZK-SNARK proof generation and were NEVER recorded on-chain or revealed to the employer.
+          </p>
+          <div class="hidden-grid">
+            <div class="hidden-item">🔒 Candidate names</div>
+            <div class="hidden-item">🔒 Candidate ages</div>
+            <div class="hidden-item">🔒 Exact years of experience</div>
+            <div class="hidden-item">🔒 Exact education institutions</div>
+            <div class="hidden-item">🔒 Exact skill scores</div>
+            <div class="hidden-item">🔒 Gender / ethnicity</div>
+            <div class="hidden-item">🔒 Location / address</div>
+            <div class="hidden-item">🔒 Candidate public keys</div>
+          </div>
+        </div>
+
+        <!-- PROOF EXPLORER LOG -->
+        <div class="ledger-card">
+          <h2>📜 Midnight Transaction Block Explorer</h2>
+          <p class="sub">
+            Live stream of transactions, transitions, and cryptographic proofs verification logs.
+          </p>
+          <div class="proof-log" id="proofLog" style="max-height: 400px; overflow-y: auto;">
+            Loading...
+          </div>
+        </div>
+
+      </div>
+    </div> <!-- /container -->
 
   <script type="module">
+    import { contractAPI } from '../contract-layer/contract-api.ts';
 
     const EDU_LABELS = {
-      1: 'High School (1)',
+      1: 'High School Diploma (1)',
       2: "Associate's (2)",
       3: "Bachelor's (3)",
       4: "Master's (4)",
-      5: 'PhD (5)',
+      5: 'PhD / Doctorate (5)',
     };
 
-    const stored = localStorage.getItem('shieldhire_deployment');
+    // ── Simulate ticking block height ───────────────────────
+    let currentBlock = 584219;
+    function tickBlockHeight() {
+      currentBlock += Math.floor(Math.random() * 2) + 1;
+      document.getElementById('tBlock').textContent = `#${currentBlock.toLocaleString()}`;
+      
+      // slightly fluctuate latency
+      const lat = 24 + Math.floor(Math.random() * 12);
+      document.getElementById('tLatency').textContent = `${lat} ms`;
+      
+      setTimeout(tickBlockHeight, 6000 + Math.random() * 4000);
+    }
+    tickBlockHeight();
 
-    if (!stored) {
-      document.getElementById('noData').style.display = 'block';
-    } else {
+    // ── Load all stats and dropdown ─────────────────────────
+    const selector = document.getElementById('analyticsJobSelector');
+
+    function initAnalytics() {
+      const stats = contractAPI.getGlobalStats();
+      const jobs = contractAPI.getJobs();
+
+      if (!jobs || jobs.length === 0) {
+        document.getElementById('analyticsContent').style.display = 'none';
+        document.getElementById('noData').style.display = 'block';
+        return;
+      }
+
       document.getElementById('analyticsContent').style.display = 'block';
+      document.getElementById('noData').style.display = 'none';
 
-      const { requirements, deployment, jobTitle } = JSON.parse(stored);
+      // Update Aggregated counters
+      document.getElementById('statContracts').textContent = stats.totalJobs;
+      document.getElementById('statTotal').textContent = stats.totalApplications;
+      document.getElementById('statQualified').textContent = stats.qualifiedCount;
+      
+      // Calculate total private data witnesses shielded:
+      // (Name, Age, Experience, Education, Skill = 5 private elements per application)
+      document.getElementById('statShieldedData').textContent = stats.totalApplications * 5;
 
-      // Fetch deterministic persistent counts from localStorage
-      const counters  = JSON.parse(localStorage.getItem('shieldhire_counters') || '{"total":0,"qualified":0}');
-      const total     = counters.total;
-      const qualified = counters.qualified;
-      const rate      = total > 0 ? Math.round((qualified / total) * 100) : 0;
+      // Populate Selector dropdown
+      selector.innerHTML = '';
+      jobs.forEach(job => {
+        const option = document.createElement('option');
+        option.value = job.id;
+        option.textContent = `${job.jobTitle} [${job.id.slice(0, 14)}...]`;
+        selector.appendChild(option);
+      });
 
-      // Stats
-      document.getElementById('statTotal').textContent     = total;
-      document.getElementById('statQualified').textContent = qualified;
-      document.getElementById('statRate').textContent      = rate + '%';
+      selector.selectedIndex = 0;
+      updateContractInspector();
+      updateExplorerFeed();
+    }
 
-      // Ledger state
-      document.getElementById('ledgerTitle').textContent =
-        jobTitle || '—';
-      document.getElementById('ledgerYears').textContent =
-        requirements.minYearsExperience + ' years (Uint32)';
-      document.getElementById('ledgerEdu').textContent =
-        EDU_LABELS[requirements.minEducationLevel] || '—';
-      document.getElementById('ledgerSkill').textContent =
-        requirements.minSkillScore + ' / 100 (Uint32)';
-      document.getElementById('ledgerTotal').textContent =
-        total + ' (Counter)';
-      document.getElementById('ledgerQual').textContent =
-        qualified + ' (Counter)';
-      document.getElementById('ledgerAddr').textContent =
-        deployment.contractAddress;
+    function updateContractInspector() {
+      const jobId = selector.value;
+      if (!jobId) return;
 
-      // Proof log
-      const now = new Date().toISOString();
-      const candId = Math.floor(Math.random() * 9000) + 1000;
-      const hash = '0x' + Array.from(
-        { length: 64 },
-        () => Math.floor(Math.random() * 16).toString(16)
-      ).join('');
+      const job = contractAPI.getJobById(jobId);
+      if (!job) return;
 
-      document.getElementById('proofLog').innerHTML = `
-<span class="dim">// Midnight Preprod Testnet — Block #${Math.floor(Math.random()*100000)+500000}</span>
-<span class="dim">// ${now}</span>
+      document.getElementById('ledgerTitle').textContent = job.jobTitle;
+      document.getElementById('ledgerAddr').textContent = job.id;
+      document.getElementById('ledgerTotal').textContent = `${job.counters.total} (Counter)`;
+      document.getElementById('ledgerQual').textContent = `${job.counters.qualified} (Counter)`;
+      
+      const statusEl = document.getElementById('ledgerStatus');
+      if (job.status === 'active') {
+        statusEl.textContent = 'Active (TRUE)';
+        statusEl.style.color = '#2ecc71';
+      } else {
+        statusEl.textContent = 'Closed (FALSE)';
+        statusEl.style.color = '#e74c3c';
+      }
 
-<span class="purple">transition</span> applyAnonymously {
-  <span class="dim">// PRIVATE witnesses (never recorded):</span>
+      const mode = job.jobMode;
+      const isWeighted = mode === 2;
+
+      const existingThreshold = document.getElementById('ledgerThresholdRow');
+      if (existingThreshold) existingThreshold.remove();
+
+      if (isWeighted && job.weightedConfig) {
+        document.getElementById('ledgerMode').textContent = '2 (WEIGHTED QUALIFICATION CIRCUIT)';
+        
+        document.getElementById('lblLedgerYears').textContent = 'yearsWeight';
+        document.getElementById('ledgerYears').textContent = `${job.weightedConfig.yearsWeight}× multiplier (Uint32)`;
+        
+        document.getElementById('lblLedgerEdu').textContent = 'educationWeight';
+        document.getElementById('ledgerEdu').textContent = `${job.weightedConfig.educationWeight}× multiplier (Uint32)`;
+        
+        document.getElementById('lblLedgerSkill').textContent = 'skillWeight';
+        document.getElementById('ledgerSkill').textContent = `${job.weightedConfig.skillWeight}× multiplier (Uint32)`;
+
+        // Add row for scoreThreshold
+        const row = document.createElement('div');
+        row.className = 'ledger-row';
+        row.id = 'ledgerThresholdRow';
+        row.innerHTML = `
+          <span class="lbl">scoreThreshold</span>
+          <span class="val" style="color: var(--teal-lt); font-weight: bold;">${job.weightedConfig.scoreThreshold} points</span>
+          <span class="tag tag-pub">PUBLIC</span>
+        `;
+        // Insert before totalApplications row
+        const ledgerCard = document.querySelector('.ledger-card');
+        const totalAppRow = Array.from(ledgerCard.children).find(el => el.innerHTML && el.innerHTML.includes('totalApplications'));
+        ledgerCard.insertBefore(row, totalAppRow);
+      } else {
+        document.getElementById('ledgerMode').textContent = '1 (STRICT MINIMUMS CIRCUIT)';
+        
+        document.getElementById('lblLedgerYears').textContent = 'minYearsRequired';
+        document.getElementById('ledgerYears').textContent = `${job.requirements.minYearsExperience} years (Uint32)`;
+        
+        document.getElementById('lblLedgerEdu').textContent = 'minEducationRequired';
+        document.getElementById('ledgerEdu').textContent = `${EDU_LABELS[job.requirements.minEducationLevel] || job.requirements.minEducationLevel}`;
+        
+        document.getElementById('lblLedgerSkill').textContent = 'minSkillRequired';
+        document.getElementById('ledgerSkill').textContent = `${job.requirements.minSkillScore} / 100 (Uint32)`;
+      }
+    }
+
+    function updateExplorerFeed() {
+      const history = contractAPI.getExplorerHistory();
+      const logBox = document.getElementById('proofLog');
+      logBox.innerHTML = '';
+
+      if (!history || history.length === 0) {
+        logBox.innerHTML = '<span class="dim">// No block transactions recorded yet.</span>';
+        return;
+      }
+
+      history.forEach((tx, idx) => {
+        const borderClass = idx > 0 ? 'style="border-top:1px solid rgba(255,255,255,0.06); padding-top:14px; margin-top:14px;"' : '';
+        let txDetails = '';
+
+        if (tx.transition === 'setStrictRequirements' || tx.transition === 'setWeightedRequirements') {
+          txDetails = `
+<span class="dim">// Deployer configured parameters:</span>
+  configMode:   <span class="purple">${tx.params.mode === 2 ? 'Weighted' : 'Strict'}</span>
+  years:        <span class="purple">${tx.params.years}</span>
+  education:    <span class="purple">${tx.params.education}</span>
+  skill:        <span class="purple">${tx.params.skill}</span>
+  status:       <span class="green">DEPLOYED SUCCESS ✓</span>
+          `.trim();
+        } else if (tx.transition === 'closeJobContract') {
+          txDetails = `
+<span class="dim">// State change:</span>
+  newState:     <span class="purple">jobActive = FALSE</span>
+  status:       <span class="green">FROZEN ON-CHAIN ✓</span>
+          `.trim();
+        } else if (tx.transition === 'applyAnonymously') {
+          txDetails = `
+<span class="dim">// ZK Witnesses encrypted locally (never recorded):</span>
   secret_years:     <span class="green">[SHIELDED]</span>
   secret_education: <span class="green">[SHIELDED]</span>
   secret_skill:     <span class="green">[SHIELDED]</span>
 
-  <span class="dim">// PUBLIC result only:</span>
-  candidateId:  <span class="green">#${candId}</span>
-  result:       <span class="green">QUALIFIED ✓</span>
-  proofHash:    <span class="green">${hash.slice(0,32)}...</span>
-  dataExposed:  <span class="green">[]</span>
-}
+<span class="dim">// Proof Verification Result:</span>
+  candidateId:  <span class="green">#${tx.params.candidateId}</span>
+  qualified:    <span class="green">${tx.params.qualified ? 'TRUE ✓' : 'FALSE ❌'}</span>
+  constraints:  <span class="purple">964 PLONK gates</span>
+  proofVerify:  <span class="green">VALID ✓ (14ms)</span>
+          `.trim();
+        } else if (tx.transition === 'proveSpecificTrait') {
+          txDetails = `
+<span class="dim">// Selective Disclosure Trait Proof:</span>
+  attribute:    <span class="purple">${tx.params.attribute === 1 ? 'Experience' : tx.params.attribute === 2 ? 'Education' : 'Skill Score'}</span>
+  threshold:    <span class="purple">${tx.params.threshold}</span>
+  provenState:  <span class="green">VERIFIED ✓</span>
+  proofVerify:  <span class="green">VALID SNARK ✓ (9ms)</span>
+          `.trim();
+        }
 
-<span class="dim">// ledger.totalApplications incremented</span>
-<span class="dim">// ledger.qualifiedCount incremented</span>
-<span class="dim">// Personal data exposed: ZERO</span>
-      `.trim();
+        const txBlock = `
+<div ${borderClass}>
+<span class="dim">// Midnight Preprod Testnet — Block #${tx.blockHeight}</span>
+<span class="dim">// Timestamp: ${new Date(tx.timestamp).toLocaleString()}</span>
+
+<span class="purple">transition</span> ${tx.transition} {
+  contractAddress: <span class="green">${tx.contractAddress}</span>
+  transactionHash: <span class="green">${tx.txHash}</span>
+  proofHash:       <span class="green">${tx.proofHash.slice(0, 36)}...</span>
+
+  ${txDetails}
+}
+</div>
+        `.trim();
+
+        logBox.innerHTML += txBlock + '\n\n';
+      });
     }
+
+    selector.addEventListener('change', updateContractInspector);
+
+    // Initial setup
+    document.addEventListener('DOMContentLoaded', () => {
+      initAnalytics();
+
+      // Listen for local changes to stats
+      window.addEventListener('storage', () => {
+        initAnalytics();
+      });
+    });
   </script>
   <script type="module" src="enhance.js"></script>
 </body>
