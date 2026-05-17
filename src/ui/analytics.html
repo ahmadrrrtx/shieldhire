@@ -392,10 +392,11 @@
 
       const { requirements, deployment, jobTitle } = JSON.parse(stored);
 
-      // Simulate anonymous counts
-      const total     = Math.floor(Math.random() * 40) + 15;
-      const qualified = Math.floor(total * 0.45);
-      const rate      = Math.round((qualified / total) * 100);
+      // Fetch deterministic persistent counts from localStorage
+      const counters  = JSON.parse(localStorage.getItem('shieldhire_counters') || '{"total":0,"qualified":0}');
+      const total     = counters.total;
+      const qualified = counters.qualified;
+      const rate      = total > 0 ? Math.round((qualified / total) * 100) : 0;
 
       // Stats
       document.getElementById('statTotal').textContent     = total;

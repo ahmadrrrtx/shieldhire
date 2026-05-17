@@ -751,6 +751,12 @@ if (mode === 1) {
           if (insVerifyTime)  insVerifyTime.innerHTML = verifyTime + '<span class="metric-unit">ms</span>';
         }, 500);
 
+        // Accumulate deterministic counters persistently
+        const counters = JSON.parse(localStorage.getItem('shieldhire_counters') || '{"total":0,"qualified":0}');
+        counters.total++;
+        if (qualified) counters.qualified++;
+        localStorage.setItem('shieldhire_counters', JSON.stringify(counters));
+
         if (qualified) {
           document.getElementById('candId').textContent =
             Math.floor(Math.random() * 9000) + 1000;

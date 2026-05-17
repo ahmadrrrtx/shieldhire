@@ -167,6 +167,12 @@ export class ShieldHireContractAPI {
       JSON.stringify({ requirements, deployment: result })
     );
 
+    // Initialize/reset persistent counters for deterministic stats
+    localStorage.setItem(
+      'shieldhire_counters',
+      JSON.stringify({ total: 0, qualified: 0 })
+    );
+
     return result;
   }
 
@@ -251,6 +257,12 @@ export class ShieldHireContractAPI {
       networkId:               this.config.networkId,
     };
 
+    // Accumulate deterministic counters persistently
+    const counters = JSON.parse(localStorage.getItem('shieldhire_counters') || '{"total":0,"qualified":0}');
+    counters.total++;
+    if (qualified) counters.qualified++;
+    localStorage.setItem('shieldhire_counters', JSON.stringify(counters));
+
     console.log('[ShieldHire] === ZK PROOF GENERATION COMPLETE ===');
     console.log('[ShieldHire] Result:', qualified ? 'QUALIFIED ✅' : 'NOT QUALIFIED ❌');
 
@@ -268,12 +280,14 @@ export class ShieldHireContractAPI {
       deployment: DeploymentResult;
     };
 
+    const counters = JSON.parse(localStorage.getItem('shieldhire_counters') || '{"total":0,"qualified":0}');
+
     return {
       minYearsRequired:     requirements.minYearsExperience,
       minEducationRequired: requirements.minEducationLevel,
       minSkillRequired:     requirements.minSkillScore,
-      totalApplications:    Math.floor(Math.random() * 50) + 10,
-      qualifiedCount:       Math.floor(Math.random() * 20) + 3,
+      totalApplications:    counters.total,
+      qualifiedCount:       counters.qualified,
       jobActive:            true,
     };
   }
